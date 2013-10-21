@@ -1,0 +1,20 @@
+CC=g++
+lib=-lpthread -lboost_thread
+#inc="/home/zhufeng/my_lib/boost_trunk"
+inc=-L/usr/local/lib
+
+all: main group condition interrupt
+
+main : main.cpp
+	$(CC) main.cpp -o all -I $(inc) $(lib)
+group : thread_group.cpp
+	$(CC) thread_group.cpp -o group -I $(inc) $(lib)
+condition : condition.cpp
+	$(CC) condition.cpp -o condition -I $(inc) $(lib)
+interrupt: interrupt.cpp
+	$(CC) interrupt.cpp -o interrupt -I $(inc) $(lib)
+clean:
+	rm *.o *.out all
+
+
+

@@ -1,0 +1,13 @@
+CC=g++
+
+all:test_main.o
+	$(CC) test_main.cpp
+test_main.o:test_main.cpp set_randomer.o scope_randomer.o 
+	$(CC) -c test_main.cpp
+set_randomer.o:set_randomer.hpp scope_randomer.hpp scope_randomer.o
+	$(CC) -c set_randomer.hpp
+scope_randomer.o:scope_randomer.hpp scope_randomer.cpp
+	$(CC) -c scope_randomer.hpp scope_randomer.cpp
+clean:
+	rm *.o *.out *.gch
+

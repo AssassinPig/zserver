@@ -1,0 +1,11 @@
+CC=g++
+
+SRC=test_main.cpp set_randomer.cpp scope_randomer.cpp
+
+all:$(SRC:.cpp=.o)
+	$(CC) *.o 
+%.o:%.cpp
+	$(CC) -c -o $@ $<
+clean:
+	rm *.o *.out *.gch
+

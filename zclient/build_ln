@@ -1,0 +1,4 @@
+ln -s ../com_inc.hpp .
+ln -s ../zpacket.hpp .
+ln -s ../cmd_def.hpp .
+ln -s ../std_inc.hpp .
