@@ -35,10 +35,5 @@ private:
 	int load_config();
 	static bool ms_active;
 
-	//zmodulecontainer
-	ZModuleContainer* m_ModuleContainer; 	
-
-	//zexamplemodule
-
 };
 #endif //_ZSERVER_H_

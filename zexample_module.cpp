@@ -1,4 +1,25 @@
+#include "com_macro.hpp"
+#include "zlog.hpp"
 #include "zexample_module.hpp"
+#include <stdio.h>
+
+int example_thread(void* data)
+{
+	ZExampleModule* module = (ZExampleModule*)data;
+	while(1)
+	{
+		if(module->status()  == ZMT_EXIT)
+		{
+			break;	
+		}
+
+		zlog.log("example_thread while");
+	}
+
+	//clean 
+	zlog.log("epoll thread exit then close epoll");
+    FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
+}
 
 int ZExampleModule::init() 
 {
@@ -7,6 +28,10 @@ int ZExampleModule::init()
 
 int ZExampleModule::startup() 
 {
+	//boost::function<int(void*)> f = boost::bind(example_thread, (void*)this);
+	m_thread = make_thread<int(void*)>(example_thread, (void*)this);
+	//m_thread = make_thread<int(void*)>(f);
+
 	return 0;
 }
 

@@ -5,6 +5,25 @@
 #include "zlog.hpp"
 #include "zworld.hpp"
 
+int epoll_thread_fun(void* data)
+{
+	ZEpoll* module = (ZEpoll*)data;
+	while(1)
+	{
+		if(module->status() == ZMT_EXIT)
+		{
+			break;				
+		}
+		
+		module->loop();
+	}
+
+	//clean 
+	zlog.log("epoll thread exit then close epoll");
+	module->shutdown(); 
+    FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
+}
+
 //ZNETWORK_MODUL_INIT
 //bool ZEpoll::ms_exit = false;
 ZEpoll::ZEpoll()
@@ -62,20 +81,25 @@ int ZEpoll::startup()
         return -1;
     }
 
+	//boost::function<int(void*)> fun = boost::bind(epoll_thread_fun, (void*)this);
+	m_thread = make_thread<int(void*)>(epoll_thread_fun, (void*)this);
+
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 int ZEpoll::shutdown()
 {
+	zlog.log("epoll shutdown");
 	//ms_exit = true;
-    //close(m_epoll);
+    close(m_epoll);
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 int ZEpoll::exit()
 {
-	zlog.log("close epoll");
-    close(m_epoll);
+	zlog.log("epoll exit");
+	m_status = ZMT_EXIT;
+    //close(m_epoll);
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
@@ -109,12 +133,13 @@ int ZEpoll::process_output()
 	}
 }
 
+
 int ZEpoll::loop()
 {
-        //zlog.log("zepoll::loop()");
+        zlog.log("zepoll::loop()");
         static struct epoll_event events[MAX_EPOLL_EVENT];
         int nfds;
-        nfds = epoll_wait(m_epoll, events, MAX_EPOLL_EVENT, 0);
+        nfds = epoll_wait(m_epoll, events, MAX_EPOLL_EVENT, 1000);
         for (int i = 0; i < nfds; ++i) {
             if (events[i].data.fd == m_listener) {
                 sockaddr_in in;

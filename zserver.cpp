@@ -9,6 +9,8 @@
 ZLog zlog;
 ZEpoll ZServer::m_epoll;
 bool ZServer::ms_active=false;
+//zmodulecontainer
+ZModuleContainer* m_ModuleContainer=NULL; 	
 
 ZServer::ZServer()
 {
@@ -18,7 +20,7 @@ ZServer::ZServer()
 int ZServer::init()
 {   
   	set_signal();
-	m_epoll.init();
+	//m_epoll.init();
 	ZPacket_factory::init();
 	ms_active = true;
 	m_ModuleContainer = new ZModuleContainer;	
@@ -109,7 +111,7 @@ int ZServer::start_thread()
 
 int ZServer::startup()
 {
-    m_epoll.startup();
+    //m_epoll.startup();
 
 	m_ModuleContainer->startup();
 
@@ -126,6 +128,7 @@ bool ZServer::is_active()
 int ZServer::base_loop()
 {                  
 	while(is_active()){
+		zlog.log("server base_loop");
 			//zmodulecontainer
 				
 			//network input output 
@@ -134,17 +137,18 @@ int ZServer::base_loop()
   			//process_input();
   			//process_output();
   			//gWorld.process_cmd();
-		//sleep(100);	
+		sleep(100);	
 	}
 	
-	m_epoll.exit();
+	//m_epoll.exit();
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 void ZServer::shutdown(int sig_num)
 {
-    m_epoll.shutdown();
+	m_ModuleContainer->exit();
+	//m_epoll.shutdown();
 	ms_active = false;
 	zlog.log("server shutdown[sig:%d]", sig_num);
     //FUN_NEEDS_RET_WITH_DEFAULT(int, 0)

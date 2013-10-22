@@ -13,6 +13,7 @@ zserver.cpp
 zstream.cpp
 zworld.cpp
 zexample_module.cpp
+zthread_util.hpp
 )
 TARGET_LINK_LIBRARIES(main pthread)
 TARGET_LINK_LIBRARIES(main boost_thread)

@@ -1,14 +1,13 @@
 #ifndef _ZMODUL_H__
 #define _ZMODUL_H__
 
+#include "zthread_util.hpp"
+
+
 #define ZMODULE_NUM_MAX 64 
 
-#include <boost/thread.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/pthread/once.hpp>
-
 enum ZMODULE_TYPE{
-	ZMT_NORMAL = 0,
+	ZMT_RUNNING = 0,
 	ZMT_EXIT = 1,
 };
 
@@ -18,17 +17,18 @@ class ZModule
 		ZModule();
 		virtual ~ZModule();
 			
-		virtual int init() = 0;
-		virtual int startup() = 0;
-		virtual int shutdown() = 0;
-		virtual int exit() = 0;
+		virtual int init() {return 0;}
+		virtual int startup() {return 0;}
+		virtual int shutdown() {return 0;}
+		virtual int exit() {return 0;}
 		
-		virtual int ready_process() = 0;
-		virtual int process_input() = 0;
-		virtual int process_output() = 0;
-		virtual int process_except() = 0;
+		virtual int ready_process() {return 0;}
 
-		virtual int loop() = 0;
+		virtual int process_input() {return 0;}
+		virtual int process_output(){return 0;}
+		virtual int process_except() {return 0;}
+
+		virtual int loop() {return 0;} 
 		//inline
 		ZMODULE_TYPE status() { return m_status; }
 	protected:
@@ -46,6 +46,7 @@ class ZModuleContainer
 		int init();
 		int startup();
 		int loop();
+		int exit();
 
 	private:
 		boost::thread m_thread;
