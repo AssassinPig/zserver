@@ -26,7 +26,7 @@ protected:
 	int set_signal();
 	int start_thread();  
 protected:
-	static ZEpoll m_epoll;
+	//static ZEpoll m_epoll;
 	pthread_t m_admin_tid;
 	pthread_t recv_thd_tid;
 	pthread_t send_thd_tid;

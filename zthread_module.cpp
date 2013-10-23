@@ -65,15 +65,6 @@ int ZModuleContainer::loop()
 	}
 
 	//clean();
-//	for(int i=0; i<m_count; ++i)
-//	{
-//		if(m_pModuleList)
-//		{
-//			ZModule* module = m_pModuleList[i];
-//		}
-//	}
-	
-
 	return 0;	
 }
 
@@ -89,4 +80,10 @@ int ZModuleContainer::exit()
 	}
 
 	return 0;
+}
+
+ZModule* ZModuleContainer::get_network_module()
+{
+	//m_pModuleList[0] must be network module
+	return m_pModuleList[0];	
 }

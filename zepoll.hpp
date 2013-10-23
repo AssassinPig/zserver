@@ -19,7 +19,7 @@ public:
 	virtual int process_input();
 	virtual int process_output();
 	virtual int process_except();
-
+	
 public:
     virtual int loop();
 

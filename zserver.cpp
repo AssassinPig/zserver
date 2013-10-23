@@ -7,7 +7,7 @@
 #include<signal.h>
 
 ZLog zlog;
-ZEpoll ZServer::m_epoll;
+//ZEpoll ZServer::m_epoll;
 bool ZServer::ms_active=false;
 //zmodulecontainer
 ZModuleContainer* m_ModuleContainer=NULL; 	
@@ -112,7 +112,6 @@ int ZServer::start_thread()
 int ZServer::startup()
 {
     //m_epoll.startup();
-
 	m_ModuleContainer->startup();
 
 	//log("server startup");

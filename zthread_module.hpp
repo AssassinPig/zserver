@@ -48,6 +48,8 @@ class ZModuleContainer
 		int loop();
 		int exit();
 
+		ZModule* get_network_module();
+
 	private:
 		boost::thread m_thread;
 		ZModule** m_pModuleList; //make sure mutex

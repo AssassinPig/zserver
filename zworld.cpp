@@ -2,6 +2,7 @@
 #include "zpacket.hpp"
 #include "zlog.hpp"
 #include "cmd_def.hpp"
+#include "zepoll.hpp"
 
 ZWorld gWorld;
 void ZWorld::dispatch(char data[], uint32_t len, ZFD_T fd)
@@ -48,6 +49,23 @@ int ZWorld::process_cmd()
 		}	
 	}
 	
+}
+
+void ZWorld::add_send_list(ZClient* client)
+{
+	m_listReadyClients.push_back(client);	
+}
+
+ZWorld::SEND_LIST& ZWorld::get_send_list()
+{
+	return m_listReadyClients;	
+}
+
+ZClient* ZWorld::get_client(int fd)
+{
+	SESSION_MAP::iterator it = m_sessions.find(fd);
+	CLIENT_MAP::iterator it_client = m_clients.find(it->second);
+	return it_client->second; 
 }
 
 void ZWorld::add_session(ZFD_T fd)

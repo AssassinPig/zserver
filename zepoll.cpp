@@ -4,6 +4,7 @@
 #include "com_inc.hpp"
 #include "zlog.hpp"
 #include "zworld.hpp"
+#include "zmutex.hpp"
 
 int epoll_thread_fun(void* data)
 {
@@ -155,8 +156,8 @@ int ZEpoll::loop()
 					}
 					
 					//add session
-					//gWorld.add_session(client_fd);
-
+					gWorld.add_session(client_fd);
+						
 					zlog.log("accpet client %s:%d", inet_ntoa(in.sin_addr), ntohs(in.sin_port));
 					fcntl(client_fd, F_SETFL, fcntl(client_fd, F_GETFL)|O_NONBLOCK);
 					m_ev.events = EPOLLIN|EPOLLOUT|EPOLLET;
@@ -168,17 +169,12 @@ int ZEpoll::loop()
 				}
             } else {
                 if (events[i].events & EPOLLIN) {
-                    printf("EPOLLIN:\n");
+                    //printf("EPOLLIN:\n");
                     char buf[MAX_RECV];
                     memset(buf, 0, sizeof(buf));
                     int n = recv(events[i].data.fd, buf, sizeof(buf), 0);
                     if (n > 0) {
-						/*
-						printf("recv_size:%d\n", n);
-                        printf("%s", buf);
-						printf("\n");
-						*/	
-						//gWorld.dispatch(buf, n, events[i].data.fd);
+						gWorld.dispatch(buf, n, events[i].data.fd);
                     } else if (n == 0) {
                         printf("client linkdown\n");
                         close(events[i].data.fd);
@@ -201,7 +197,7 @@ int ZEpoll::loop()
                 }
 
                 if (events[i].events & EPOLLOUT) {
-                    printf("EPOLLOUT:\n");
+                    //printf("EPOLLOUT:\n");
 					/*
 						packet* packet = world->get_client_response(fd);
 						packet->get_data();

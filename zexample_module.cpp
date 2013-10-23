@@ -29,8 +29,8 @@ int ZExampleModule::init()
 int ZExampleModule::startup() 
 {
 	//boost::function<int(void*)> f = boost::bind(example_thread, (void*)this);
-	m_thread = make_thread<int(void*)>(example_thread, (void*)this);
 	//m_thread = make_thread<int(void*)>(f);
+	m_thread = make_thread<int(void*)>(example_thread, (void*)this);
 
 	return 0;
 }

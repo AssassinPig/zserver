@@ -2,6 +2,7 @@
 #include "com_macro.hpp"
 #include "com_def.hpp"
 #include "zlog.hpp"
+#include "zworld.hpp"
 
 ZFD_T ZClient::get_fd()
 {
@@ -56,6 +57,8 @@ int ZClient::process_packet()
 			rest_len -= out_len;
 			//rest_len -= head.len;
 			//rest_len -= sizeof(zpacket_t); 
+
+			process_output();
 		} else {
 			//invalid cmd
 			zlog.log("uid[%u] invalid cmd[%u]", head.uid, head.cmd);
@@ -71,9 +74,10 @@ int ZClient::process_input(char data[], uint32_t len)
 {
 	//input不能为0
 	assert(m_input.input(data, len));	
+		
 }
 
 int ZClient::process_output()
 {
-
+	gWorld.add_send_list(this);
 }
