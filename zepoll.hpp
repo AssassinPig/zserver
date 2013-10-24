@@ -19,7 +19,9 @@ public:
 	virtual int process_input();
 	virtual int process_output();
 	virtual int process_except();
-	
+
+	void add_send_event(int fd);
+
 public:
     virtual int loop();
 
@@ -27,7 +29,7 @@ private:
     int m_epoll;
     int m_listener;
     epoll_event m_ev;
-    struct epoll_event m_events[MAX_EPOLL_EVENT];
+    //struct epoll_event m_events[MAX_EPOLL_EVENT];
     int m_nfds;
 };
 #endif //_ZEPOLL_H__

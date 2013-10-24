@@ -2,6 +2,7 @@
 #include "zexample_module.hpp"
 #include "zepoll.hpp"
 
+ZModuleContainer* g_ModuleContainer = NULL;
 ZModule::ZModule()
 {
 

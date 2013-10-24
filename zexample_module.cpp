@@ -1,7 +1,8 @@
+#include "com_inc.hpp"
 #include "com_macro.hpp"
 #include "zlog.hpp"
 #include "zexample_module.hpp"
-#include <stdio.h>
+#include "zworld.hpp"
 
 int example_thread(void* data)
 {
@@ -14,6 +15,10 @@ int example_thread(void* data)
 		}
 
 		zlog.log("example_thread while");
+		//unsafe tobe continued
+		//loop client
+		//build packet and process
+		gWorld.process_cmd();
 	}
 
 	//clean 

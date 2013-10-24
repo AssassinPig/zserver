@@ -108,32 +108,40 @@ int ZEpoll::ready_process()
 {
 	//static struct epoll_event events[MAX_EPOLL_EVENT];
     //int nfds;
-    m_nfds = epoll_wait(m_epoll, m_events, MAX_EPOLL_EVENT, 1000);
-	zlog.log("ready_process with nfds[%d]", m_nfds);
+//   m_nfds = epoll_wait(m_epoll, m_events, MAX_EPOLL_EVENT, 1000);
+//	zlog.log("ready_process with nfds[%d]", m_nfds);
 }
 
 int ZEpoll::process_except() 
 {
-    for (int i = 0; i < m_nfds; ++i) {
-		
-	}
 }
 
 int ZEpoll::process_input() 
 {
-    for (int i = 0; i < m_nfds; ++i) {
-    	if (m_events[i].data.fd == m_listener) {
-		}
-	}
+//    for (int i = 0; i < m_nfds; ++i) {
+//    	if (m_events[i].data.fd == m_listener) {
+//		}
+//	}
 }
 
 int ZEpoll::process_output()
 {
-    for (int i = 0; i < m_nfds; ++i) { 
-	
-	}
+//    for (int i = 0; i < m_nfds; ++i) { 
+//	
+//	}
 }
 
+void ZEpoll::add_send_event(int fd)
+{
+    epoll_event ev;
+	ev.events = EPOLLOUT|EPOLLET;
+	ev.data.fd = fd;
+
+	if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, fd, &m_ev) == -1) {
+		perror("add send event epoll_ctl");
+		return;
+	}
+}
 
 int ZEpoll::loop()
 {
@@ -206,10 +214,11 @@ int ZEpoll::loop()
 						world->finish_send_packet(seq);
 					*/
 
-                    char buf[MAX_SEND];
-                    memset(buf, 0, sizeof(buf));
-					sprintf(buf, "send\n");
-					int n = send(events[i].data.fd, buf, strlen(buf), 0);
+                char buf[MAX_SEND];
+                memset(buf, 0, sizeof(buf));
+				sprintf(buf, "send\n");
+				int n = send(events[i].data.fd, buf, strlen(buf), 0);
+
 					if (n > 0) {
 						printf("server send_size:%d\n", n);
 						//puts(buf);

@@ -3,6 +3,7 @@
 #include "zlog.hpp"
 #include "zpacket.hpp"
 #include "zworld.hpp"
+#include "zthread_module.hpp"
 
 #include<signal.h>
 
@@ -10,7 +11,7 @@ ZLog zlog;
 //ZEpoll ZServer::m_epoll;
 bool ZServer::ms_active=false;
 //zmodulecontainer
-ZModuleContainer* m_ModuleContainer=NULL; 	
+//ZModuleContainer* g_ModuleContainer=NULL; 	
 
 ZServer::ZServer()
 {
@@ -23,7 +24,7 @@ int ZServer::init()
 	//m_epoll.init();
 	ZPacket_factory::init();
 	ms_active = true;
-	m_ModuleContainer = new ZModuleContainer;	
+	g_ModuleContainer = new ZModuleContainer;	
 	FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
@@ -112,7 +113,7 @@ int ZServer::start_thread()
 int ZServer::startup()
 {
     //m_epoll.startup();
-	m_ModuleContainer->startup();
+	g_ModuleContainer->startup();
 
 	//log("server startup");
 	zlog.log("server startup");
@@ -146,7 +147,7 @@ int ZServer::base_loop()
 
 void ZServer::shutdown(int sig_num)
 {
-	m_ModuleContainer->exit();
+	g_ModuleContainer->exit();
 	//m_epoll.shutdown();
 	ms_active = false;
 	zlog.log("server shutdown[sig:%d]", sig_num);

@@ -3,6 +3,7 @@
 #include "zlog.hpp"
 #include "cmd_def.hpp"
 #include "zepoll.hpp"
+#include "zthread_module.hpp"
 
 ZWorld gWorld;
 void ZWorld::dispatch(char data[], uint32_t len, ZFD_T fd)
@@ -48,12 +49,14 @@ int ZWorld::process_cmd()
 			kick_player(it_begin->first);
 		}	
 	}
-	
 }
 
 void ZWorld::add_send_list(ZClient* client)
 {
 	m_listReadyClients.push_back(client);	
+	
+	ZEpoll* epoll = (ZEpoll*)g_ModuleContainer->get_network_module();
+	epoll->add_send_event(client->get_fd());
 }
 
 ZWorld::SEND_LIST& ZWorld::get_send_list()

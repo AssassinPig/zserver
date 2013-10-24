@@ -74,7 +74,6 @@ int ZClient::process_input(char data[], uint32_t len)
 {
 	//input不能为0
 	assert(m_input.input(data, len));	
-		
 }
 
 int ZClient::process_output()

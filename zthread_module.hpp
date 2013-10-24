@@ -3,13 +3,13 @@
 
 #include "zthread_util.hpp"
 
-
 #define ZMODULE_NUM_MAX 64 
 
 enum ZMODULE_TYPE{
 	ZMT_RUNNING = 0,
 	ZMT_EXIT = 1,
 };
+
 
 class ZModule
 {
@@ -56,5 +56,7 @@ class ZModuleContainer
 		int m_status;
 		int m_count;
 };
+
+extern ZModuleContainer* g_ModuleContainer;
 
 #endif //_ZNETWORK_MODUL_H__
