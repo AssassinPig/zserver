@@ -4,22 +4,23 @@
 #include "zlog.hpp"
 #include "zworld.hpp"
 
-ZFD_T ZClient::get_fd()
-{
-	return m_fd;
-}
-/*
-int ZClient::process_cmd()
-{
-	FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
-}
-*/
+#include <boost/bind.hpp>
 
-ZClient::ZClient(ZFD_T fd)
+#include "zserver.hpp"
+
+ZClient::ZClient(ZServer* server) : m_server(server)
 {
-	//default length
-	m_input.malloc();
-	m_output.malloc();
+//	boost::function<int (char data[],  uint32_t len)> handler1 = boost::bind(&ZClient::on_message, this, _1, _2);
+//	boost::function<int ()> handler2 = boost::bind(&ZClient::on_error, this);
+//	boost::function<int ()> handler3 = boost::bind(&ZClient::on_close, this);
+
+	ZConnection::message_handler handler1 = boost::bind(&ZClient::on_message, this, _1, _2);
+	ZConnection::error_handler handler2 = boost::bind(&ZClient::on_error, this);
+	ZConnection::close_handler handler3 = boost::bind(&ZClient::on_close, this);
+
+	m_connection.set_message_handler(handler1);
+	m_connection.set_error_handler(handler2);
+	m_connection.set_close_handler(handler3);
 }
 
 ZClient::~ZClient()
@@ -34,49 +35,61 @@ void ZClient::close_session()
 
 int ZClient::process_packet()
 {
-	int rest_len = m_input.length();
-	do{
-		if (rest_len < sizeof(zpacket_t)) {
-			break;
-		}
-		char* data = m_input.get_data();
-		zpacket_t head = ZPacket::build_head(data);
-		if (head.len > rest_len) {
-			break;
-		} 
-
-		ZPacket* packet = ZPacket_factory::create_packet(head, data);	
-		if (packet) {
-			//packet(packet);
-			zlog.log("uid[%u] handle cmd[%u]", head.uid, head.cmd);
-
-			char tmp[MAX_STREAM_LEN];
-			//未必out完
-			//m_input.output(tmp, head.len+sizeof(zpacket_t));
-			int out_len = m_input.output(tmp, MAX_STREAM_LEN);
-			rest_len -= out_len;
-			//rest_len -= head.len;
-			//rest_len -= sizeof(zpacket_t); 
-
-			process_output();
-		} else {
-			//invalid cmd
-			zlog.log("uid[%u] invalid cmd[%u]", head.uid, head.cmd);
-			return -1;
-		}
-		break;
-	} while(true);
-
+//	int rest_len = m_input.length();
+//	do{
+//		if (rest_len < sizeof(zpacket_t)) {
+//			break;
+//		}
+//		char* data = m_input.get_data();
+//		zpacket_t head = ZPacket::build_head(data);
+//		if (head.len > rest_len) {
+//			break;
+//		} 
+//
+//		ZPacket* packet = ZPacket_factory::create_packet(head, data);	
+//		if (packet) {
+//			zlog.log("uid[%u] handle cmd[%u]", head.uid, head.cmd);
+//
+//			char tmp[MAX_STREAM_LEN];
+//			//未必out完
+//			int out_len = m_input.output(tmp, MAX_STREAM_LEN);
+//			rest_len -= out_len;
+//
+//			process_output();
+//		} else {
+//			//invalid cmd
+//			zlog.log("uid[%u] invalid cmd[%u]", head.uid, head.cmd);
+//			return -1;
+//		}
+//		break;
+//	} while(true);
+//
 	FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
 }
 	
 int ZClient::process_input(char data[], uint32_t len)
 {
 	//input不能为0
-	assert(m_input.input(data, len));	
+	//assert(m_input.input(data, len));	
 }
 
 int ZClient::process_output()
 {
-	gWorld.add_send_list(this);
+	//gWorld.add_send_list(this);
+}
+
+int ZClient::on_message(char data[], uint32_t len)
+{
+	zlog.log("on_message: data len=%u", len);
+	FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
+}
+
+int ZClient::on_error()
+{
+	FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
+}
+
+int ZClient::on_close()
+{
+	FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
 }

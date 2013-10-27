@@ -8,33 +8,33 @@
 ZWorld gWorld;
 void ZWorld::dispatch(char data[], uint32_t len, ZFD_T fd)
 {
-	SESSION_MAP::iterator it = m_sessions.find(fd);
-	if (it == m_sessions.end()) {
-		//m_sessions[fd] = 0;
-		zlog.log("fd does not exist");
-		return;
-	}
-	
-	//rebuild head	
-	zlog.log("receive data len[%u]", len);
-	zpacket_t head = ZPacket::build_head(data);
+//	SESSION_MAP::iterator it = m_sessions.find(fd);
+//	if (it == m_sessions.end()) {
+//		//m_sessions[fd] = 0;
+//		zlog.log("fd does not exist");
+//		return;
+//	}
+//	
+//	//rebuild head	
+//	zlog.log("receive data len[%u]", len);
+//	zpacket_t head = ZPacket::build_head(data);
 /*
 	if (head.len > len) {
 		zlog.log("uid[%u] invalid packet len[%u], head.len[%u]", head.uid, len, head.len);
 		return;
 	}
 */	
-	ZClient* client = find_client(head.uid);
-	if (client) {
-		client->process_input(data, len);
-	} else {
-		if (head.cmd == cmd_login) {
-			add_client(head.uid, fd);
-		} else {
-			zlog.log("player[%u] have not login", head.uid);			
-			return;
-		}
-	} 
+//	ZClient* client = find_client(head.uid);
+//	if (client) {
+//		client->process_input(data, len);
+//	} else {
+//		if (head.cmd == cmd_login) {
+//			add_client(head.uid, fd);
+//		} else {
+//			zlog.log("player[%u] have not login", head.uid);			
+//			return;
+//		}
+//	} 
 }
 
 int ZWorld::process_cmd()
@@ -53,10 +53,10 @@ int ZWorld::process_cmd()
 
 void ZWorld::add_send_list(ZClient* client)
 {
-	m_listReadyClients.push_back(client);	
-	
-	ZEpoll* epoll = (ZEpoll*)g_ModuleContainer->get_network_module();
-	epoll->add_send_event(client->get_fd());
+	//m_listReadyClients.push_back(client);	
+	//
+	//ZEpoll* epoll = (ZEpoll*)g_ModuleContainer->get_network_module();
+	//epoll->add_send_event(client->get_fd());
 }
 
 ZWorld::SEND_LIST& ZWorld::get_send_list()
@@ -92,8 +92,8 @@ void ZWorld::add_client(USER_ID uid, ZFD_T fd)
 	
 	m_sessions[fd] = uid;
 	//先这样，后面优化
-	ZClient* client = new ZClient(fd);
-	m_clients[uid] = client;
+//	ZClient* client = new ZClient(fd);
+//	m_clients[uid] = client;
 }
 
 void ZWorld::kick_player(USER_ID uid)
@@ -129,20 +129,3 @@ ZClient* ZWorld::find_client(USER_ID uid)
 	}
 }
 
-void ZWorld::handle_packet(ZPacket* packet)
-{
-/*
-	ZClient* client = find_client(packet->uid);
-	if (client) {
-		//dispatch to client inputstream 
-	} else {
-		//login
-		if (packet == cmd_login) {
-			
-			add_client();		
-		} else {
-			//have not login
-		}	
-	}
-*/
-}

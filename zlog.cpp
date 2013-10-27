@@ -46,6 +46,7 @@ void ZLog::log(char* buf, ...)
 	);
 	
 	fprintf(ms_fp, "%s", tmp_buf2);
+	fflush(ms_fp);
 }
 
 //no need any more

@@ -8,33 +8,29 @@
 
 int epoll_thread_fun(void* data)
 {
-	ZEpoll* module = (ZEpoll*)data;
+	ZEpoll* epoll= (ZEpoll*)data;
 	while(1)
 	{
-		if(module->status() == ZMT_EXIT)
+		if(epoll->status() == ZMT_EXIT)
 		{
 			break;				
 		}
 		
-		module->loop();
+		epoll->loop();
 	}
 
 	//clean 
 	zlog.log("epoll thread exit then close epoll");
-	module->shutdown(); 
+	epoll->shutdown(); 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
-//ZNETWORK_MODUL_INIT
-//bool ZEpoll::ms_exit = false;
 ZEpoll::ZEpoll()
 {
-
 }
 
 ZEpoll::~ZEpoll()
 {
-
 }
 
 int ZEpoll::init()
@@ -75,15 +71,16 @@ int ZEpoll::startup()
         return -1;
     }
 
-    m_ev.events = EPOLLIN;
-    m_ev.data.fd = m_listener;
-    if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, m_listener, &m_ev) == -1) {
+    epoll_event ev;
+    ev.events = EPOLLIN;
+    ev.data.fd = m_listener;
+    if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, m_listener, &ev) == -1) {
         perror("epoll_ctl");
         return -1;
     }
 
-	//boost::function<int(void*)> fun = boost::bind(epoll_thread_fun, (void*)this);
-	m_thread = make_thread<int(void*)>(epoll_thread_fun, (void*)this);
+	//m_thread = make_thread<int(void*)>(epoll_thread_fun, (void*)this);
+	zlog.log("epoll startup");
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
@@ -91,7 +88,6 @@ int ZEpoll::startup()
 int ZEpoll::shutdown()
 {
 	zlog.log("epoll shutdown");
-	//ms_exit = true;
     close(m_epoll);
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
@@ -100,47 +96,35 @@ int ZEpoll::exit()
 {
 	zlog.log("epoll exit");
 	m_status = ZMT_EXIT;
-    //close(m_epoll);
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
-int ZEpoll::ready_process()
+void ZEpoll::set_read(int fd)
 {
-	//static struct epoll_event events[MAX_EPOLL_EVENT];
-    //int nfds;
-//   m_nfds = epoll_wait(m_epoll, m_events, MAX_EPOLL_EVENT, 1000);
-//	zlog.log("ready_process with nfds[%d]", m_nfds);
+    epoll_event ev;
+	ev.events = EPOLLIN|EPOLLET;
+	ev.data.fd = fd;
+
+	if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, fd, &ev) == -1) {
+		perror("add read event epoll_ctl");
+		return;
+	}
 }
 
-int ZEpoll::process_except() 
-{
-}
-
-int ZEpoll::process_input() 
-{
-//    for (int i = 0; i < m_nfds; ++i) {
-//    	if (m_events[i].data.fd == m_listener) {
-//		}
-//	}
-}
-
-int ZEpoll::process_output()
-{
-//    for (int i = 0; i < m_nfds; ++i) { 
-//	
-//	}
-}
-
-void ZEpoll::add_send_event(int fd)
+void ZEpoll::set_write(int fd)
 {
     epoll_event ev;
 	ev.events = EPOLLOUT|EPOLLET;
 	ev.data.fd = fd;
 
-	if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, fd, &m_ev) == -1) {
+	if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, fd, &ev) == -1) {
 		perror("add send event epoll_ctl");
 		return;
 	}
+}
+
+void ZEpoll::set_accept_handler(accept_handler handler) { 
+	m_accept_handler = handler;
 }
 
 int ZEpoll::loop()
@@ -156,89 +140,84 @@ int ZEpoll::loop()
                 len = sizeof(in);
 
                 int client_fd;
-				while( client_fd = accept(m_listener, (struct sockaddr *)&in, &len)) {
-					printf("accpet client %s:%d\n", inet_ntoa(in.sin_addr), ntohs(in.sin_port));
+				while( (client_fd = accept(m_listener, (struct sockaddr *)&in, &len)) > 0) {
+					//printf("accpet client %s:%d\n", inet_ntoa(in.sin_addr), ntohs(in.sin_port));
+					zlog.log("accpet client %s:%d", inet_ntoa(in.sin_addr), ntohs(in.sin_port));
 					if (client_fd < 0){
 						perror("accept");
-						continue;
+						break;;
 					}
 					
 					//add session
-					gWorld.add_session(client_fd);
-						
-					zlog.log("accpet client %s:%d", inet_ntoa(in.sin_addr), ntohs(in.sin_port));
+					void* connection =  m_accept_handler(client_fd);
+
 					fcntl(client_fd, F_SETFL, fcntl(client_fd, F_GETFL)|O_NONBLOCK);
-					m_ev.events = EPOLLIN|EPOLLOUT|EPOLLET;
-					m_ev.data.fd = client_fd;
-					if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, client_fd, &m_ev) == -1) {
+					epoll_event ev;
+					ev.events = EPOLLIN|EPOLLOUT|EPOLLET;
+					ev.data.fd = client_fd;
+					ev.data.ptr = (void*)connection; 
+
+					if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, client_fd, &ev) == -1) {
 						perror("epoll_ctl");
 						return -1;
 					}
 				}
             } else {
                 if (events[i].events & EPOLLIN) {
-                    //printf("EPOLLIN:\n");
-                    char buf[MAX_RECV];
-                    memset(buf, 0, sizeof(buf));
-                    int n = recv(events[i].data.fd, buf, sizeof(buf), 0);
-                    if (n > 0) {
-						gWorld.dispatch(buf, n, events[i].data.fd);
-                    } else if (n == 0) {
-                        printf("client linkdown\n");
-                        close(events[i].data.fd);
-						
-						//kick player
-						//gWorld.kick_player();
-                        continue;
-                    } else { 
-                        if (errno == EAGAIN || errno == EINTR) {
-                            continue;
-                        } else {
-                            printf("client linkdown\n");
-                            close(events[i].data.fd);
+                    //char buf[MAX_RECV];
+                    //memset(buf, 0, sizeof(buf));
+                    //int n = recv(events[i].data.fd, buf, sizeof(buf), 0);
+					ZConnection* connection = (ZConnection*)events[i].data.ptr;
+					int n = connection->on_network_read();
 
-							//kick player
-							//gWorld.kick_player();
-                            continue;
-                        }
-                    }
+                   // if (n > 0) {
+				   // 	//gWorld.dispatch(buf, n, events[i].data.fd);
+                   // } else if (n == 0) {
+                   //     //printf("client linkdown\n");
+                   //     close(events[i].data.fd);
+				   // 	//kick player
+				   // 	//gWorld.kick_player();
+                   //     continue;
+                   // } else { 
+                   //     if (errno == EAGAIN || errno == EINTR) {
+                   //         continue;
+                   //     } else {
+                   //         //printf("client linkdown\n");
+                   //         close(events[i].data.fd);
+
+				   // 		//kick player
+				   // 		//gWorld.kick_player();
+                   //         continue;
+                   //     }
+                   // }
                 }
 
                 if (events[i].events & EPOLLOUT) {
-                    //printf("EPOLLOUT:\n");
-					/*
-						packet* packet = world->get_client_response(fd);
-						packet->get_data();
-						
-						int n = send(events[i].data.fd, buf, strlen(buf), 0);
-						world->finish_send_packet(seq);
-					*/
+					ZConnection* connection = (ZConnection*)events[i].data.ptr;
+					int n = connection->on_network_write();
+				//	char buf[MAX_SEND];
+				//	memset(buf, 0, sizeof(buf));
+				//	sprintf(buf, "send\n");
+				//	int n = send(events[i].data.fd, buf, strlen(buf), 0);
 
-                char buf[MAX_SEND];
-                memset(buf, 0, sizeof(buf));
-				sprintf(buf, "send\n");
-				int n = send(events[i].data.fd, buf, strlen(buf), 0);
-
-					if (n > 0) {
-						printf("server send_size:%d\n", n);
-						//puts(buf);
-					} else if (n == 0) {
-                        printf("client linkdown\n");
-                        close(events[i].data.fd);
-                        continue;
-					} else {
-                        if (errno == EAGAIN || errno == EINTR) {
-                            continue;
-                        } else {
-                            printf("client linkdown\n");
-                            close(events[i].data.fd);
-                            continue;
-                        }
-					}
+				//	if (n > 0) {
+				//		//printf("server send_size:%d\n", n);
+				//	} else if (n == 0) {
+                //        //printf("client linkdown\n");
+                //        close(events[i].data.fd);
+                //        continue;
+				//	} else {
+                //        if (errno == EAGAIN || errno == EINTR) {
+                //            continue;
+                //        } else {
+                //            printf("client linkdown\n");
+                //            close(events[i].data.fd);
+                //            continue;
+                //        }
+				//	}
                 }
 
                 if (events[i].events & (EPOLLERR|EPOLLHUP|EPOLLPRI)) {
-                    printf("EPOLLERR|EPOLLHUP|EPOLLPRI: client linkdown\n");
                     zlog.log("EPOLLERR|EPOLLHUP|EPOLLPRI: client linkdown");
                     close(events[i].data.fd);
                     continue;

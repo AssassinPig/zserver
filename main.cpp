@@ -5,9 +5,8 @@ int main()
 
     server.init();
     server.startup();
-    server.base_loop();
-    server.uninit();
-    //server.shutdown(99);
-
+    server.loop();
+	//server.exit();
+	
     return 0;  
 }

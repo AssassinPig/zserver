@@ -6,8 +6,6 @@ enum ZNETWORK_TYPE{
 	ZNT_EXIT = 1,
 };
 
-#define ZNETWORK_MODUL_INIT ZNETWORK_TYPE ZNetwork_modul::ms_status=ZNT_EXIT;
-
 class ZNetwork_modul
 {
 public:
@@ -23,7 +21,6 @@ public:
 	virtual int process_input() = 0;
 	virtual int process_output() = 0;
 	virtual int process_except() = 0;
-    //int loop();
 
 protected:
 	static ZNETWORK_TYPE ms_status;

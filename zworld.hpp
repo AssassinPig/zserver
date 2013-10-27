@@ -33,8 +33,6 @@ public:
 	//lock the client 
 	ZClient* get_client(int fd);
 
-protected:
-	void handle_packet(ZPacket* packet);
 private:
 	ZClient* find_client(USER_ID uid);
 

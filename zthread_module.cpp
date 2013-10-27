@@ -30,14 +30,12 @@ int ZModuleContainer::init()
 int ZModuleContainer::startup()
 {
 	ZEpoll* epoll_module = new ZEpoll;	
-	m_pModuleList[m_count] = epoll_module;
+	m_pModuleList[0] = epoll_module;
 	epoll_module->startup();
-	m_count++;
 
 	ZExampleModule* example_module = new ZExampleModule;  			
-	m_pModuleList[m_count] = example_module;
-	example_module->startup();
-	m_count++;
+	m_pModuleList[1] = example_module;
+	//example_module->startup();
 
 	return 0;
 }

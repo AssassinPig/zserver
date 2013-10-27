@@ -1,5 +1,5 @@
-#ifndef _ZMODUL_H__
-#define _ZMODUL_H__
+#ifndef _ZMODULE_H__
+#define _ZMODULE_H__
 
 #include "zthread_util.hpp"
 
@@ -8,8 +8,8 @@
 enum ZMODULE_TYPE{
 	ZMT_RUNNING = 0,
 	ZMT_EXIT = 1,
+	ZMT_IDLE = 2,
 };
-
 
 class ZModule
 {
