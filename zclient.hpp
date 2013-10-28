@@ -14,9 +14,9 @@ public:
 
 	int on_message(char data[], uint32_t len);
 	int on_error();
-	int on_close();
+	void on_close();
 
-	ZFD_T get_fd();
+	void set_connection(ZFD_T fd);
 	
 	void send_to_client(zpacket_t* packet);	
 	void send_error();

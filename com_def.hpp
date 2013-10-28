@@ -21,7 +21,7 @@
 #define BIND_PORT 27149
 #define LISTENER_MAX 1024
 
-#define MAX_EPOLL_EVENT 1024
+#define MAX_EPOLL_EVENT 64 
 
 #define MAX_SEND 1024
 #define MAX_RECV 1024 

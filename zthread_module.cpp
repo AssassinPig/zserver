@@ -74,7 +74,8 @@ int ZModuleContainer::exit()
 			if(m_pModuleList)
 			{
 				ZModule* module = m_pModuleList[i];
-				module->exit();
+				if(module)
+					module->exit();
 			}
 	}
 

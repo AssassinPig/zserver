@@ -10,6 +10,10 @@ class ZEpoll : public ZModule
 {
 public:
 	typedef boost::function<ZConnection* (int)> accept_handler;
+
+//	typedef boost::function<void (int, bool)> set_read_handler;
+//	typedef boost::function<void (int, bool)> set_write_handler;
+
     ZEpoll();
     ~ZEpoll();
     virtual int init();
@@ -17,10 +21,13 @@ public:
     virtual int shutdown();
 	virtual int exit();
 
-	void set_read(int fd);
-	void set_write(int fd);
+	void set_read(epoll_event& event, bool flag);
+	void set_write(epoll_event& event, bool flag);
+	void del(int fd);
 
 	void set_accept_handler(accept_handler handler);  
+//	void set_read_handler(set_read_handler handler);  
+//	void set_write_handler(set_write_handler handler);  
 
 public:
     virtual int loop();

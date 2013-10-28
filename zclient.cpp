@@ -81,6 +81,9 @@ int ZClient::process_output()
 int ZClient::on_message(char data[], uint32_t len)
 {
 	zlog.log("on_message: data len=%u", len);
+	ZStream& out = m_connection.get_outstream();
+	out.output(data, len);
+	m_connection.on_network_write();
 	FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
 }
 
@@ -89,7 +92,13 @@ int ZClient::on_error()
 	FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
 }
 
-int ZClient::on_close()
+void ZClient::on_close()
 {
-	FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
+	zlog.log("client close");
+	m_server->close_client(this);
+}
+
+void ZClient::set_connection(ZFD_T fd)
+{
+	m_connection.set_fd(fd);	
 }

@@ -2,7 +2,6 @@
 #include "com_macro.hpp"
 #include "zlog.hpp"
 #include "zpacket.hpp"
-#include "zworld.hpp"
 #include "zthread_module.hpp"
 
 #include<signal.h>
@@ -82,14 +81,21 @@ ZConnection* ZServer::accept_client(int fd)
 {
 	zlog.log("server accept [fd:%d]", fd);
 	ZClient* client = new ZClient(this);
+	client->set_connection(fd);
 	m_clients.push_back(client);
 	m_sessions[fd] = client;	
 	return  client->get_connection();
-    //FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
-int ZServer::close_client()
+int ZServer::close_client(ZClient* client)
 {
+	for(CLIENT_LIST::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
+		if((*it) == client) {
+			delete *it;
+			m_clients.erase(it);	
+			FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
+		}
+	}
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 

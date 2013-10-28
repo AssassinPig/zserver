@@ -17,7 +17,7 @@ public:
 	static void shutdown(int sig_num);
 
 	ZConnection* accept_client(int fd); 
-	int close_client();
+	int close_client(ZClient* client);
 	int load_config();
 
 	//lock the client 
