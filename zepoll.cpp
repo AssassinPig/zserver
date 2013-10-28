@@ -107,7 +107,8 @@ void ZEpoll::set_read(epoll_event& ev, bool flag)
 		ev.events &= ~EPOLLIN;
 	}
 
-	if (epoll_ctl(m_epoll, EPOLL_CTL_MOD, ev.data.fd, &ev) == -1) {
+	ZConnection* connection = (ZConnection*)ev.data.ptr;
+	if (epoll_ctl(m_epoll, EPOLL_CTL_MOD, connection->get_fd(), &ev) == -1) {
 		perror("set read event epoll_ctl");
 		return;
 	}
@@ -121,9 +122,9 @@ void ZEpoll::set_write(epoll_event& ev, bool flag)
 		ev.events &= ~EPOLLOUT;
 	}
 
-	if (epoll_ctl(m_epoll, EPOLL_CTL_MOD, ev.data.fd, &ev) == -1) {
+	ZConnection* connection = (ZConnection*)ev.data.ptr;
+	if (epoll_ctl(m_epoll, EPOLL_CTL_MOD, connection->get_fd(), &ev) == -1) {
 		perror("set write event epoll_ctl");
-		zlog.log("set write read [fd:%d] ", ev.data.fd );
 		return;
 	}
 }
@@ -165,13 +166,13 @@ int ZEpoll::loop()
 					}
 					
 					//add session
-					void* connection = m_accept_handler(client_fd);
+					void* ptr_connection = m_accept_handler(client_fd);
 
 					fcntl(client_fd, F_SETFL, fcntl(client_fd, F_GETFL)|O_NONBLOCK);
 					epoll_event ev;
 					ev.events = EPOLLIN |EPOLLET;
-					ev.data.fd = client_fd;
-					ev.data.ptr = (void*)connection; 
+					//ev.data.fd = client_fd;
+					ev.data.ptr = ptr_connection; 
 
 					if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, client_fd, &ev) == -1) {
 						perror("epoll_ctl");
@@ -187,9 +188,6 @@ int ZEpoll::loop()
 
                 if (events[i].events & EPOLLIN) {
 					ZConnection* connection = (ZConnection*)events[i].data.ptr;
-
-					zlog.log("read connection %p", connection);
-					zlog.log("read fd %d", events[i].data.fd);
 					if(connection
 						&& connection->status() == ZCS_CONNECTED) {
 						int n = connection->on_network_read();
@@ -197,7 +195,6 @@ int ZEpoll::loop()
 							closelist.push_back(connection);
 						} 
 						else if(n>0){
-							zlog.log("epoll read [fd:%d] len=%d", connection->get_fd(), n);
 							set_write(events[i], true);
 						} else {
 							zlog.log("epoll read failed");
@@ -208,7 +205,6 @@ int ZEpoll::loop()
                 if (events[i].events & EPOLLOUT) {
 					ZConnection* connection = (ZConnection*)events[i].data.ptr;
 					zlog.log("write connection %p", connection);
-					zlog.log("write fd %d", events[i].data.fd);
 					if(connection
 						&& connection->status() == ZCS_CONNECTED) {
 						int n = connection->on_network_write();
@@ -236,7 +232,7 @@ int ZEpoll::loop()
 		for(std::vector<ZConnection*>::iterator it = closelist.begin();
 			it != closelist.end();
 			++it) {
-				(*it)->on_close();
+			(*it)->on_close();
 		}
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
