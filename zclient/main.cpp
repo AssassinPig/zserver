@@ -6,14 +6,11 @@
 #include <time.h>
 #include <sys/time.h>
 
-//#include <event.h>
-
 #include <netinet/in.h>
 #include <fcntl.h>
 #include <assert.h>
 #include <stdio.h>
 #include <errno.h>
-//#include <event2/event.h>
 
 #include <signal.h>
 #include <unistd.h>
@@ -27,10 +24,6 @@
 
 //zserver
 #define LISTEN_PORT 27149 
-
-//libevent
-//#define LISTEN_PORT 30356 
-//#define LISTEN_PORT 9876 
 
 #define MAX_BUF 1024
 
@@ -52,7 +45,7 @@ int main(int argc, char* argv[])
 	fd_set read_set;
 	fd_set write_set;
 	timeval tv;
-	tv.tv_sec = 1;
+	tv.tv_sec = 0;
 	tv.tv_usec = 0;
 
 	while(true) {
@@ -83,7 +76,7 @@ int main(int argc, char* argv[])
 			printf("revc:%s\n", recv_buf);	
 		}		
 		
-	//	if(FD_ISSET(0, &read_set)) {
+		if(FD_ISSET(0, &read_set)) {
 	//		int n = 0;
 	//		int send_size=0;
 	//		char buf[MAX_BUF];
@@ -101,30 +94,16 @@ int main(int argc, char* argv[])
 	//			send_size = send(s, buf, strlen(buf)+1, 0);
 	//			printf("kb client send_size:%d\n", send_size);
 	//		} 
-	//	}
+			break;
+		}
 		
 		if(FD_ISSET(s, &write_set))	{
 			int send_size=0;
 			char send_buf[MAX_BUF];
-			//memset(send_buf, 0, MAX_BUF);
 			sprintf(send_buf, "abcdef");
-			//sprintf(send_buf,"client send\n");
-			//zpacket_t ZPacket::generate_head();
-
-		//	zpacket_t pk;
-		//	pk.len = 0;
-		//	pk.cmd = cmd_login;
-		//	pk.uid = 9999;
-		//	pk.seq = 1234;
-		//	pk.ret = 0;
-		
 			send_size = send(s, send_buf, strlen(send_buf)+1, 0);
-			
-			//send_size = send(s, &pk, sizeof(zpacket_t), 0);
 			printf("client send_size:%d\n", send_size);
 		}	
-
-		//break;
 	}	
 				
 	close(s);	
