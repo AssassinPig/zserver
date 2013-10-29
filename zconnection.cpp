@@ -82,12 +82,17 @@ int ZConnection::on_network_write()
 	int ret = 0;
 
 	while (n > 0) { 
-		nwrite = write(m_fd, buf, strlen(buf)+1);
+		if( (nwrite = write(m_fd, buf, strlen(buf)+1)) <=0) {
+			perror("write failed on network write");
+			break;
+		}
+
 		n -= nwrite;
 		ret += nwrite;
-		zlog.log("on_network_write %s", buf);
+		zlog.log("on_network_write1 %s", buf);
 	}
 
+	zlog.log("on_network_write %s", buf);
 	if (nwrite == -1 && errno != EAGAIN) {
         zlog.log("write error");
 		perror("write error");

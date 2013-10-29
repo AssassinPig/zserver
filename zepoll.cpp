@@ -185,33 +185,37 @@ int ZEpoll::loop()
 				}
 
                 if (events[i].events & EPOLLIN) {
-						int n = connection->on_network_read();
-						if(n==0){
-							closelist.push_back(connection);
-						} 
-						else if(n>0){
-							set_write(events[i], true);
-						} else {
-							zlog.log("epoll read failed");
-						}
+					int n = connection->on_network_read();
+					if(n==0){
+						closelist.push_back(connection);
+					} 
+					else if(n>0){
+						set_write(events[i], true);
+					} else {
+						zlog.log("epoll read failed");
 					}
 
+					continue;
+				}
+
                 if (events[i].events & EPOLLOUT) {
-						int n = connection->on_network_write();
-						if(n==0){
-							closelist.push_back(connection);
-						}
-						else if(n > 0) {
-							zlog.log("epoll write [fd:%d] len=%d", connection->get_fd(), n);
-							set_read(events[i], true);
-						} else {
-							zlog.log("epoll write failed");
-						}
+					int n = connection->on_network_write();
+					if(n==0){
+						closelist.push_back(connection);
+					}
+					else if(n > 0) {
+						zlog.log("epoll write [fd:%d] len=%d", connection->get_fd(), n);
+						set_read(events[i], true);
+					} else {
+						zlog.log("epoll write failed");
+					}
+
+					continue;
                 }
 
                 if (events[i].events & (EPOLLERR|EPOLLHUP|EPOLLPRI)) {
                     zlog.log("EPOLLERR|EPOLLHUP|EPOLLPRI: client linkdown");
-					closelist.push_back(connection);
+					close(connection->get_fd());
                     continue;
                 }
             }
