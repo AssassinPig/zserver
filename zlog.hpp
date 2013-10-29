@@ -10,7 +10,7 @@ class ZLog
 public:
 	ZLog(); 
 	~ZLog(); 
-	static void log(char* buf, ...);
+	static void log(const char* buf, ...);
 protected:
 	static FILE *ms_fp;
 };

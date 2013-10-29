@@ -52,8 +52,9 @@ int ZConnection::on_network_read()
 
 	char buf[MAX_SEND];
 	memset(buf, 0, MAX_SEND);
-	while ( (nread = read(m_fd, buf + n, MAX_SEND)) > 0) {
+	while ( (nread = read(m_fd, buf, MAX_SEND)) > 0) {
 		n += nread;
+		zlog.log("on_network_read %s", buf);
 	}
 
 	//char* buf = m_input.get_data();
@@ -78,10 +79,13 @@ int ZConnection::on_network_write()
 	char buf[MAX_SEND];
 	sprintf(buf, "abcdef");
 	int n = strlen(buf)+1;
+	int ret = 0;
 
 	while (n > 0) { 
 		nwrite = write(m_fd, buf, strlen(buf)+1);
 		n -= nwrite;
+		ret += nwrite;
+		zlog.log("on_network_write %s", buf);
 	}
 
 	if (nwrite == -1 && errno != EAGAIN) {
@@ -90,5 +94,5 @@ int ZConnection::on_network_write()
 		return -1;
 	}
 
-	return n;	
+	return ret;	
 }

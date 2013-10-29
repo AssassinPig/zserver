@@ -35,6 +35,7 @@ ZPacket* ZPacket_factory::create_packet(zpacket_t& head, char data[])
 ZPacket* ZPacket::create_packet(zpacket_t& head, char data[])
 {
 	zlog.log("ZPacket::create_packet");
+	return NULL;
 } 
 
 ZPacket* ZPacket_conceret::create_packet(zpacket_t& head, char data[])

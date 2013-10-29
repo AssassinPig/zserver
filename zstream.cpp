@@ -26,6 +26,7 @@ int ZStream::malloc(uint32_t len)
 	m_capacity = size;
 	m_data = new char[size]; 
 	memset(m_data, 0, size); 
+	return size;
 }
 
 int ZStream::input(char* data, uint32_t len)
@@ -155,7 +156,7 @@ uint32_t ZStream::length()
 	if (m_head > m_tail) {
 		return m_head - m_tail;
 	} else {
-		m_capacity - m_tail + m_head;
+		return m_capacity - m_tail + m_head;
 	}
 }
 

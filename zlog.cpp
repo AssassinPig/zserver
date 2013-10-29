@@ -19,7 +19,7 @@ ZLog::~ZLog()
 	}
 }
 
-void ZLog::log(char* buf, ...)
+void ZLog::log(const char* buf, ...)
 {
 	assert(ms_fp);
 

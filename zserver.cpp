@@ -59,12 +59,11 @@ bool ZServer::is_active()
 
 int ZServer::loop()
 {                  
+	//zlog.log("server loop");
 	while(is_active()){
-		zlog.log("server loop");
 		//g_ModuleContainer->loop();
 		ZEpoll* epoll = (ZEpoll*)g_ModuleContainer->get_network_module();
 		epoll->loop();
-		//sleep(100);	
 	}
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)

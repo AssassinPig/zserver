@@ -18,7 +18,7 @@ class ZPacket {
 public:
     ZPacket() : m_ready(false) {}
     virtual bool input(const zpacket_t& packet) = 0;
-    virtual bool output() {}
+    virtual bool output() { return true; }
 
 	static zpacket_t build_head(char data[]);
 	static ZPacket* create_packet(zpacket_t& head, char data[]); 
@@ -44,7 +44,7 @@ public:
 class ZPacket_conceret : public ZPacket
 {
 public:
-    virtual bool input(const zpacket_t& packet){}
+    virtual bool input(const zpacket_t& packet) { return true; }
     //virtual bool output();
 	static ZPacket* create_packet(zpacket_t& head, char data[]);
 public:

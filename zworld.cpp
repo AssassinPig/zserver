@@ -43,12 +43,13 @@ int ZWorld::process_cmd()
 	CLIENT_MAP::iterator it_end = m_clients.end();		
 	//CLIENT_MAP::itertor it = it_begin;		
 	//针对每一个客户端处理
-	for (; it_begin != it_end; ++it_begin) {
-		if (it_begin->second->process_packet() == -1) {
-			//invaild cmd
-			kick_player(it_begin->first);
-		}	
-	}
+//	for (; it_begin != it_end; ++it_begin) {
+//		if (it_begin->second->process_packet() == -1) {
+//			//invaild cmd
+//			kick_player(it_begin->first);
+//		}	
+//	}
+	return 0;
 }
 
 void ZWorld::add_send_list(ZClient* client)
@@ -98,13 +99,13 @@ void ZWorld::add_client(USER_ID uid, ZFD_T fd)
 
 void ZWorld::kick_player(USER_ID uid)
 {
-	ZClient* client = find_client(uid);
-	if (client) {
-		zlog.log("kick player[%u]", uid);
-		client->close_session();
-		remove_player(uid);	
-		return;
-	}
+//	ZClient* client = find_client(uid);
+//	if (client) {
+//		zlog.log("kick player[%u]", uid);
+//		client->close_session();
+//		remove_player(uid);	
+//		return;
+//	}
 	
 	zlog.log("kick player[%u] faild, he does not exist", uid);
 }

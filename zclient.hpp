@@ -15,17 +15,12 @@ public:
 	int on_message(char data[], uint32_t len);
 	int on_error();
 	void on_close();
-
-	void set_connection(ZFD_T fd);
 	
 	void send_to_client(zpacket_t* packet);	
 	void send_error();
-	int process_packet();	
-	int process_input(char data[], uint32_t len);
-	int process_output();
-	void close_session();
-
 	inline ZConnection* get_connection() { return &m_connection; }
+	inline void set_connection(ZFD_T fd) {	m_connection.set_fd(fd); }
+
 private:
 	ZConnection m_connection;
 	ZServer* m_server;

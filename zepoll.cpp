@@ -142,8 +142,7 @@ void ZEpoll::set_accept_handler(accept_handler handler) {
 
 int ZEpoll::loop()
 {
-        zlog.log("zepoll::loop()");
-
+        //zlog.log("zepoll::loop()");
 		std::vector<ZConnection*> closelist;
         struct epoll_event events[MAX_EPOLL_EVENT];
         int nfds;
@@ -171,7 +170,6 @@ int ZEpoll::loop()
 					fcntl(client_fd, F_SETFL, fcntl(client_fd, F_GETFL)|O_NONBLOCK);
 					epoll_event ev;
 					ev.events = EPOLLIN |EPOLLET;
-					//ev.data.fd = client_fd;
 					ev.data.ptr = ptr_connection; 
 
 					if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, client_fd, &ev) == -1) {
@@ -187,9 +185,6 @@ int ZEpoll::loop()
 				}
 
                 if (events[i].events & EPOLLIN) {
-					ZConnection* connection = (ZConnection*)events[i].data.ptr;
-					if(connection
-						&& connection->status() == ZCS_CONNECTED) {
 						int n = connection->on_network_read();
 						if(n==0){
 							closelist.push_back(connection);
@@ -200,13 +195,8 @@ int ZEpoll::loop()
 							zlog.log("epoll read failed");
 						}
 					}
-                }
 
                 if (events[i].events & EPOLLOUT) {
-					ZConnection* connection = (ZConnection*)events[i].data.ptr;
-					zlog.log("write connection %p", connection);
-					if(connection
-						&& connection->status() == ZCS_CONNECTED) {
 						int n = connection->on_network_write();
 						if(n==0){
 							closelist.push_back(connection);
@@ -217,13 +207,11 @@ int ZEpoll::loop()
 						} else {
 							zlog.log("epoll write failed");
 						}
-					}
                 }
 
                 if (events[i].events & (EPOLLERR|EPOLLHUP|EPOLLPRI)) {
                     zlog.log("EPOLLERR|EPOLLHUP|EPOLLPRI: client linkdown");
-					//del(events[i].data.fd);
-                    close(events[i].data.fd);
+					closelist.push_back(connection);
                     continue;
                 }
             }
@@ -232,6 +220,8 @@ int ZEpoll::loop()
 		for(std::vector<ZConnection*>::iterator it = closelist.begin();
 			it != closelist.end();
 			++it) {
+			del((*it)->get_fd());
+			close((*it)->get_fd());
 			(*it)->on_close();
 		}
 
