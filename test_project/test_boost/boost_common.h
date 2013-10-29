@@ -1,2 +1,0 @@
-#define BOOST_SYSTEM_NO_LIB
-//#define BOOST_ALL_NO_LIB

@@ -1,7 +1,0 @@
-std::auto_ptr
-boost::scoped_ptr
-boost::scoped_array
-boost::shared_ptr
-boost::shared_array
-boost::weak_ptr
-boost::intrusive_ptr
