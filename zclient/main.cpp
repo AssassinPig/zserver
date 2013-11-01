@@ -48,11 +48,14 @@ int main(int argc, char* argv[])
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
 
+	FD_ZERO(&read_set);
+	FD_ZERO(&write_set);
+
+	char buf[MAX_BUF];
+
 	while(true) {
-		FD_ZERO(&read_set);
-		FD_ZERO(&write_set);
-		FD_SET(s, &read_set);	
-		FD_SET(s, &write_set);	
+		FD_SET(0, &read_set);	
+
 		if(select(s+1, &read_set, &write_set, NULL, &tv) < 0) {
 			break;
 		}
@@ -74,35 +77,28 @@ int main(int argc, char* argv[])
 			}
 			
 			printf("revc:%s\n", recv_buf);	
+			FD_SET(s, &write_set);	
 		}		
 		
 		if(FD_ISSET(0, &read_set)) {
-	//		int n = 0;
-	//		int send_size=0;
-	//		char buf[MAX_BUF];
-	//		if (( n = read(0, buf, MAX_BUF-1))) {
+			int n = 0;
+			int send_size=0;
+			memset(buf, 0, MAX_BUF);
+			if (( n = read(0, buf, MAX_BUF-1))) {
+				printf("kb input %s\n", buf);
+			}
 
-	//			//buf[n] = '\n';	
-	//			memset(buf, 0, MAX_BUF);
-	//			sscanf(buf, "%s");
-
-	//			if (strcmp(buf, "quit") == 0) {
-	//				break;
-	//			} 
-	//			
-	//			//send_size = send(s, &pk, sizeof(zpacket_t), 0);
-	//			send_size = send(s, buf, strlen(buf)+1, 0);
-	//			printf("kb client send_size:%d\n", send_size);
-	//		} 
-			break;
+			FD_SET(s, &write_set);	
 		}
 		
 		if(FD_ISSET(s, &write_set))	{
 			int send_size=0;
-			char send_buf[MAX_BUF];
-			sprintf(send_buf, "abcdef");
-			send_size = send(s, send_buf, strlen(send_buf)+1, 0);
-			printf("client send_size:%d\n", send_size);
+			if(strlen(buf)){
+				send_size = send(s, buf, strlen(buf)+1, 0);
+				printf("client send_size:%d\n", send_size);
+			}
+
+			FD_SET(s, &read_set);	
 		}	
 	}	
 				

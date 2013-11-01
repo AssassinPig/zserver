@@ -54,7 +54,7 @@ int ZConnection::on_network_read()
 	memset(buf, 0, MAX_SEND);
 	while ( (nread = read(m_fd, buf, MAX_SEND)) > 0) {
 		n += nread;
-		zlog.log("on_network_read %s", buf);
+		//zlog.log("on_network_read1 %s", buf);
 	}
 
 	//char* buf = m_input.get_data();
@@ -67,6 +67,7 @@ int ZConnection::on_network_read()
 		return -1;
 	}
 	
+	zlog.log("on_network_read %s", buf);
 	//on_message(m_input.get_data(), m_input.length());
 	//on_message(buf, n);
 	return n;	
@@ -89,7 +90,7 @@ int ZConnection::on_network_write()
 
 		n -= nwrite;
 		ret += nwrite;
-		zlog.log("on_network_write1 %s", buf);
+		//zlog.log("on_network_write1 %s", buf);
 	}
 
 	zlog.log("on_network_write %s", buf);
