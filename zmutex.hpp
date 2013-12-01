@@ -5,54 +5,54 @@
 
 class ZMutex 
 {
-public:
-	ZMutex() : m_holder(0)
-	{
-		pthread_mutex_init(&m_mutex, NULL);	
-	}
+    public:
+        ZMutex():m_holder(0)
+        {
+            pthread_mutex_init(&m_mutex, NULL);
+        }
 
-	~ZMutex()
-	{
-		assert(m_holder == 0);
-		pthread_mutex_destroy(&m_mutex);
-	}
+        ~ZMutex()
+        {
+            assert(m_holder == 0);
+            pthread_mutex_destroy(&m_mutex);
+        }
 
-	void AssaginHolder()
-	{
-		m_holder = pthread_self();
-	}
-	
-	void Lock()
-	{
-		pthread_mutex_lock(&m_mutex);	
-	}
+        void AssaginHolder()
+        {
+            m_holder = pthread_self();
+        }
 
-	void Unlock()
-	{
-		pthread_mutex_unlock(&m_mutex);	
-	}
+        void Lock()
+        {
+            pthread_mutex_lock(&m_mutex);	
+        }
 
-private:
-	pthread_mutex_t m_mutex;
-	pid_t			m_holder;
+        void Unlock()
+        {
+            pthread_mutex_unlock(&m_mutex);	
+        }
+
+    private:
+        pthread_mutex_t m_mutex;
+        pid_t			m_holder;
 };
 
 
 class ZMutexGuard
 {
-public:
-	ZMutexGuard()
-	{
-		m_mutex.Lock();	
-	}
+    public:
+        ZMutexGuard()
+        {
+            m_mutex.Lock();	
+        }
 
-	~ZMutexGuard()
-	{
-		m_mutex.Unlock();	
-	}
+        ~ZMutexGuard()
+        {
+            m_mutex.Unlock();	
+        }
 
-private:
-	ZMutex m_mutex;
+    private:
+        ZMutex m_mutex;
 };
 
 #endif //_ZMUTEX_H__

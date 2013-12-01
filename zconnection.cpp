@@ -57,11 +57,6 @@ int ZConnection::on_network_read()
 		//zlog.log("on_network_read1 %s", buf);
 	}
 
-	//char* buf = m_input.get_data();
-	//	while ( (nread = read(m_fd, buf + n, BUFSIZ-1)) > 0) {
-	//		n += nread;
-	//	}
-
 	if (nread == -1 && errno != EAGAIN) {
 		perror("read error");
 		return -1;

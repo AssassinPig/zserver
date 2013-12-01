@@ -39,8 +39,8 @@ void ZWorld::dispatch(char data[], uint32_t len, ZFD_T fd)
 
 int ZWorld::process_cmd()
 {
-	CLIENT_MAP::iterator it_begin = m_clients.begin();		
-	CLIENT_MAP::iterator it_end = m_clients.end();		
+//	CLIENT_MAP::iterator it_begin = m_clients.begin();		
+//	CLIENT_MAP::iterator it_end = m_clients.end();		
 	//CLIENT_MAP::itertor it = it_begin;		
 	//针对每一个客户端处理
 //	for (; it_begin != it_end; ++it_begin) {
