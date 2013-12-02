@@ -10,8 +10,9 @@ class ZServer
 public:
 	ZServer();
 	int init();
-	int startup();
+	int startup(const char* bind_ip, int port);
 	int loop();
+        int exit();
 	bool is_active();
 
 	static void shutdown(int sig_num);
@@ -31,6 +32,6 @@ private:
 	typedef std::map<ZFD_T, ZClient*> SESSION_MAP;
 	typedef std::vector<ZClient*> CLIENT_LIST;
 	CLIENT_LIST	m_clients;
-	SESSION_MAP m_sessions;
+	SESSION_MAP     m_sessions;
 };
 #endif //_ZSERVER_H_

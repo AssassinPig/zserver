@@ -3,19 +3,14 @@
 #include "zthread_module.hpp"
 class ZExampleModule : public ZModule
 {
-public:
-		virtual int init() ;
-		virtual int startup() ;
-		virtual int shutdown();
-		virtual int exit() ;
-		
-		virtual int ready_process() ;
-		virtual int process_input() ;
-		virtual int process_output();
-		virtual int process_except();
+    public:
+        virtual int init() ;
+        virtual int startup() ;
+        virtual int shutdown();
+        virtual int exit() ;
 
-		virtual int loop() ;
-private:
+        virtual int loop() ;
+    private:
 
 };
 #endif //_ZEXAMPLE_H__

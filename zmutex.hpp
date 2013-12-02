@@ -7,9 +7,9 @@ class ZMutex
 {
     public:
         ZMutex():m_holder(0)
-        {
-            pthread_mutex_init(&m_mutex, NULL);
-        }
+    {
+        pthread_mutex_init(&m_mutex, NULL);
+    }
 
         ~ZMutex()
         {

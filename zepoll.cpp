@@ -8,10 +8,8 @@
 int epoll_thread_fun(void* data)
 {
     ZEpoll* epoll= (ZEpoll*)data;
-    while(1)
-    {
-        if(epoll->status() == ZMT_EXIT)
-        {
+    while(1) {
+        if(epoll->status() == ZMT_EXIT) {
             break;				
         }
 
@@ -32,6 +30,14 @@ ZEpoll::~ZEpoll()
 {
 }
 
+void ZEpoll::set_sockaddr(const char* bind_ip, int port)
+{
+    //bind ip and port
+    m_sockaddr.sin_family = AF_INET;
+    m_sockaddr.sin_addr.s_addr = inet_addr(bind_ip);
+    m_sockaddr.sin_port = htons(port);
+}
+
 int ZEpoll::init()
 {
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
@@ -48,19 +54,13 @@ int ZEpoll::startup()
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
     fcntl(m_listener, F_SETFL, fcntl(m_listener, F_GETFL)|O_NONBLOCK);
 
-    sockaddr_in ip;
-    ip.sin_family = AF_INET;
-    //bind ip and port
-    ip.sin_addr.s_addr = inet_addr(BIND_IP);
-    ip.sin_port = htons(BIND_PORT);
-
     int f = 1;
     if (ERR == setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (char*)&f, sizeof(f))) {
         perror("setsockopt");    
         return -1;
     }
 
-    if (-1 == bind(m_listener, (sockaddr*)&ip, sizeof(ip))) {
+    if (-1 == bind(m_listener, (sockaddr*)&m_sockaddr, sizeof(m_sockaddr))) {
         perror("bind");
         return -1;
     }

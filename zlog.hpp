@@ -7,12 +7,12 @@
 
 class ZLog
 {
-public:
-	ZLog(); 
-	~ZLog(); 
-	static void log(const char* buf, ...);
-protected:
-	static FILE *ms_fp;
+    public:
+        ZLog(); 
+        ~ZLog(); 
+        static void log(const char* buf, ...);
+    protected:
+        static FILE *ms_fp;
 };
 
 //no need any more

@@ -11,11 +11,13 @@ class ZEpoll : public ZModule
     public:
         typedef boost::function<ZConnection* (int)> accept_handler;
 
-        //	typedef boost::function<void (int, bool)> set_read_handler;
-        //	typedef boost::function<void (int, bool)> set_write_handler;
+        //typedef boost::function<void (int, bool)> set_read_handler;
+        //typedef boost::function<void (int, bool)> set_write_handler;
 
         ZEpoll();
         ~ZEpoll();
+
+        void set_sockaddr(const char* bind_ip, int port);
         virtual int init();
         virtual int startup();
         virtual int shutdown();
@@ -26,8 +28,8 @@ class ZEpoll : public ZModule
         void del(int fd);
 
         void set_accept_handler(accept_handler handler);  
-        //	void set_read_handler(set_read_handler handler);  
-        //	void set_write_handler(set_write_handler handler);  
+        //void set_read_handler(set_read_handler handler);  
+        //void set_write_handler(set_write_handler handler);  
 
     public:
         virtual int loop();
@@ -36,5 +38,6 @@ class ZEpoll : public ZModule
         int m_epoll;		//epoll fd
         int m_listener;		//listen sock fd
         accept_handler m_accept_handler;
+        sockaddr_in m_sockaddr; //only ipv4 
 };
 #endif //_ZEPOLL_H__

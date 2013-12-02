@@ -21,4 +21,7 @@ zthread_util.hpp
 zmutex.hpp
 zconnection.cpp
 )
-TARGET_LINK_LIBRARIES(main pthread boost_thread)
+TARGET_LINK_LIBRARIES(main 
+    pthread 
+    boost_thread 
+    boost_system)

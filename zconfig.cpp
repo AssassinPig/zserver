@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <fstream>
 
+zconfig* g_config = NULL; 
 zconfig::zconfig()
 {
 }
@@ -14,23 +15,23 @@ bool zconfig::load_file(char* path)
 {
 	assert(path);
 	
-	fstream ifs;
-	ifs.open(path, ios::in);
+        std::fstream ifs;
+	ifs.open(path, std::ios::in);
 	
 	assert(ifs.is_open());	
 
 	//content line:key value 
-	string str;
+        std::string str;
 	while(getline(ifs, str)) {
 		size_t t = str.find_first_of(' ');
 		//no value no insert
-		if (t == string::npos) {
+		if (t == std::string::npos) {
 			continue;
 		}
 		
 		//get key and trim
-		string key = str.substr(0, t);
-		string value = str.substr(t, str.length()-key.length());
+                std::string key = str.substr(0, t);
+                std::string value = str.substr(t, str.length()-key.length());
 		
 		//trim space
 		size_t trim = 0;
@@ -77,7 +78,7 @@ bool zconfig::key_exist(char* key)
 	return false;
 }
 
-string& zconfig::find_value(char* key)
+std::string& zconfig::find_value(char* key)
 {
 	assert(key!=NULL && m_keymap.size()!=0);
 	return m_keymap.find(key)->second;

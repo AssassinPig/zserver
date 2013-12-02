@@ -19,21 +19,13 @@ class ZModule
 
         virtual int init() {return 0;}
         virtual int startup() {return 0;}
-        virtual int shutdown() {return 0;}
         virtual int exit() {return 0;}
-
-        virtual int ready_process() {return 0;}
-
-        virtual int process_input() {return 0;}
-        virtual int process_output(){return 0;}
-        virtual int process_except() {return 0;}
-
         virtual int loop() {return 0;} 
         //inline
         ZMODULE_TYPE status() { return m_status; }
     protected:
         ZMODULE_TYPE m_status;
-        boost::thread m_thread;
+        //boost::thread m_thread;
 };
 
 typedef int (*thread_fun)(void*);
@@ -48,10 +40,8 @@ class ZModuleContainer
         int loop();
         int exit();
 
-        ZModule* get_network_module();
-
     private:
-        boost::thread m_thread;
+        //boost::thread m_thread;
         ZModule** m_pModuleList; //make sure mutex
         int m_status;
         int m_count;

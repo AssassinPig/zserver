@@ -9,92 +9,103 @@
 
 ZLog zlog;
 bool ZServer::m_active = false;
+ZModule* g_network = NULL;
 
 ZServer::ZServer()
 {
-	m_active = false;
+    m_active = false;
 }
 
 int ZServer::init()
 {   
-  	set_signal();
-	ZPacket_factory::init();
-	m_active = true;
-	g_ModuleContainer = new ZModuleContainer;	
-	FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
+    set_signal();
+    ZPacket_factory::init();
+    m_active = true;
+    g_ModuleContainer = new ZModuleContainer;	
+
+    FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 int ZServer::set_signal()
 {
-	struct sigaction act;
-	act.sa_handler = SIG_IGN;
-	act.sa_flags &= ~SA_RESETHAND;
-	sigaction(SIGPIPE, &act, NULL);
-	
-	signal(SIGINT, ZServer::shutdown);
-	signal(SIGKILL, ZServer::shutdown);
-	signal(SIGQUIT, ZServer::shutdown);
-	signal(SIGTERM, ZServer::shutdown);
-	
+    struct sigaction act;
+    act.sa_handler = SIG_IGN;
+    act.sa_flags &= ~SA_RESETHAND;
+    sigaction(SIGPIPE, &act, NULL);
+
+    signal(SIGINT, ZServer::shutdown);
+    signal(SIGKILL, ZServer::shutdown);
+    signal(SIGQUIT, ZServer::shutdown);
+    signal(SIGTERM, ZServer::shutdown);
+
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
-int ZServer::startup()
+int ZServer::startup(const char* bind_ip, int port)
 {
-	zlog.log("server startup");
+    zlog.log("server startup ip:%s port:%d", bind_ip, port);
 
-	g_ModuleContainer->startup();
-	ZEpoll* epoll = (ZEpoll*)g_ModuleContainer->get_network_module();
+    g_ModuleContainer->startup();
 
-	ZEpoll::accept_handler handler = boost::bind(&ZServer::accept_client, this, _1);
-	epoll->set_accept_handler(handler);
+    g_network = new ZEpoll;
+    ZEpoll* epoll = (ZEpoll*)g_network;
+    
+    ZEpoll::accept_handler handler = boost::bind(&ZServer::accept_client, this, _1);
+    epoll->set_accept_handler(handler);
+    epoll->set_sockaddr(bind_ip, port);
+    g_network->startup();
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 bool ZServer::is_active()
 {
-	return m_active;
+    return m_active;
+}
+
+int ZServer::exit()
+{
+    FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 int ZServer::loop()
 {                  
-	//zlog.log("server loop");
-	while(is_active()){
-		//g_ModuleContainer->loop();
-		ZEpoll* epoll = (ZEpoll*)g_ModuleContainer->get_network_module();
-		epoll->loop();
-	}
+    //zlog.log("server loop");
+    while(is_active()){
+        g_ModuleContainer->loop();
+        ZEpoll* epoll = (ZEpoll*)g_network;
+        epoll->loop();
+    }
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 void ZServer::shutdown(int sig_num)
 {
-	g_ModuleContainer->exit();
-	m_active = false;
-	zlog.log("server shutdown[sig:%d]", sig_num);
+    //g_ModuleContainer->exit();
+    m_active = false;
+    zlog.log("server shutdown[sig:%d]", sig_num);
 }
 
 ZConnection* ZServer::accept_client(int fd)
 {
-	zlog.log("server accept [fd:%d]", fd);
-	ZClient* client = new ZClient(this);
-	client->set_connection(fd);
-	m_clients.push_back(client);
-	m_sessions[fd] = client;	
-	return  client->get_connection();
+    zlog.log("server accept [fd:%d]", fd);
+    ZClient* client = new ZClient(this);
+    client->set_connection(fd);
+    m_clients.push_back(client);
+    m_sessions[fd] = client;	
+    return  client->get_connection();
 }
 
 int ZServer::close_client(ZClient* client)
 {
-	for(CLIENT_LIST::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
-		if((*it) == client) {
-			delete *it;
-			m_clients.erase(it);	
-			FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
-		}
-	}
+    for(CLIENT_LIST::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
+        if((*it) == client) {
+            delete *it;
+            m_clients.erase(it);	
+            FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
+        }
+    }
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
@@ -105,5 +116,5 @@ int ZServer::load_config()
 
 ZClient* ZServer::get_client(int fd)
 {
-	return m_sessions[fd];	
+    return m_sessions[fd];	
 }

@@ -17,7 +17,8 @@
 #define USER_ID uint32_t 
 #endif  //USER_ID
 
-#define BIND_IP "127.0.0.1"
+//#define BIND_IP "127.0.0.1"
+#define BIND_IP "192.168.0.120"
 #define BIND_PORT 27149
 #define LISTENER_MAX 1024
 
