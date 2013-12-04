@@ -1,7 +1,7 @@
 #ifndef _ZMUTEX_H__
 #define _ZMUTEX_H__
 
-#include "pthread.h"
+#include <pthread.h>
 
 class ZMutex 
 {
@@ -35,24 +35,6 @@ class ZMutex
     private:
         pthread_mutex_t m_mutex;
         pid_t			m_holder;
-};
-
-
-class ZMutexGuard
-{
-    public:
-        ZMutexGuard()
-        {
-            m_mutex.Lock();	
-        }
-
-        ~ZMutexGuard()
-        {
-            m_mutex.Unlock();	
-        }
-
-    private:
-        ZMutex m_mutex;
 };
 
 #endif //_ZMUTEX_H__

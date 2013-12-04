@@ -20,6 +20,7 @@ zworld.cpp
 zexample_module.cpp
 zthread_util.hpp
 zmutex.hpp
+zmutex_guard.hpp
 zconnection.cpp
 )
 TARGET_LINK_LIBRARIES(simple_server
