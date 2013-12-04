@@ -70,8 +70,8 @@ int ZServer::exit()
 
 int ZServer::loop()
 {                  
-    //zlog.log("server loop");
     while(is_active()){
+        zlog.log("server loop");
         g_ModuleContainer->loop();
         ZEpoll* epoll = (ZEpoll*)g_network;
         epoll->loop();
@@ -82,8 +82,9 @@ int ZServer::loop()
 
 void ZServer::shutdown(int sig_num)
 {
-    //g_ModuleContainer->exit();
     m_active = false;
+    g_network->exit();
+    g_ModuleContainer->exit();
     zlog.log("server shutdown[sig:%d]", sig_num);
 }
 

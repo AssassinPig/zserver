@@ -1,6 +1,7 @@
 #include "zthread_module.hpp"
 #include "zexample_module.hpp"
 #include "zepoll.hpp"
+#include "zlog.hpp"
 
 ZModuleContainer* g_ModuleContainer = NULL;
 ZModule::ZModule()
@@ -15,6 +16,7 @@ ZModuleContainer::ZModuleContainer(int container_max)
 {
     m_count = container_max;
     m_pModuleList = (ZModule**)malloc(sizeof(ZModule*)*container_max); 
+    memset(m_pModuleList, 0, sizeof(ZModule*)*m_count);
 }
 
 ZModuleContainer::~ZModuleContainer()
@@ -36,18 +38,17 @@ int ZModuleContainer::startup()
 
 int ZModuleContainer::loop()
 {
-    while(true) {
-        if(!m_status) {
-            break;
-        }
+    if(!m_status) {
+        return 0;
+    }
 
-        for(int i=0; i<m_count; ++i) {
-            if(m_pModuleList) {
-                ZModule* module = m_pModuleList[i];
-                if(module->status() != ZMT_EXIT) {
-                    //scope mutex
-                    module->loop();	
-                }
+    for(int i=0; i<m_count; ++i) {
+        if(m_pModuleList) {
+            ZModule* module = m_pModuleList[i];
+            if(module != NULL && module->status() != ZMT_EXIT) {
+                zlog.log("zmoulecontainer::loop");
+                //scope mutex
+                module->loop();	
             }
         }
     }
@@ -61,7 +62,7 @@ int ZModuleContainer::exit()
     for(int i=0; i<m_count; ++i) {
         if(m_pModuleList) {
             ZModule* module = m_pModuleList[i];
-            if(module)
+            if(module!=NULL)
                 module->exit();
         }
     }

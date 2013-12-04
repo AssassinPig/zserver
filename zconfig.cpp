@@ -57,7 +57,7 @@ bool zconfig::load_file(char* path)
 	}	
 
 	ifs.close();
-	return false;
+	return true;
 }
 
 void zconfig::print_all()

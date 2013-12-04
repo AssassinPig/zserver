@@ -4,6 +4,7 @@
 #include "com_inc.hpp"
 #include "zlog.hpp"
 #include "zmutex.hpp"
+#include "zsocket_util.hpp"
 
 int epoll_thread_fun(void* data)
 {
@@ -51,22 +52,21 @@ int ZEpoll::startup()
         return -1;
     }
 
-    m_listener = socket(AF_INET, SOCK_STREAM, 0);
+    //m_listener = socket(AF_INET, SOCK_STREAM, 0);
+    m_listener = TCPSocket();
+
     fcntl(m_listener, F_SETFL, fcntl(m_listener, F_GETFL)|O_NONBLOCK);
 
     int f = 1;
-    if (ERR == setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (char*)&f, sizeof(f))) {
-        perror("setsockopt");    
+    if (ERR == ZSetsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (char*)&f, sizeof(f))) {
         return -1;
     }
 
-    if (-1 == bind(m_listener, (sockaddr*)&m_sockaddr, sizeof(m_sockaddr))) {
-        perror("bind");
+    if (ERR == ZBind(m_listener, (sockaddr*)&m_sockaddr, sizeof(m_sockaddr))) {
         return -1;
     }
 
-    if (-1 == listen(m_listener, LISTENER_MAX)) {
-        perror("listen");
+    if (ERR == ZListen(m_listener, LISTENER_MAX)) {
         return -1;
     }
 
@@ -78,7 +78,6 @@ int ZEpoll::startup()
         return -1;
     }
 
-    //m_thread = make_thread<int(void*)>(epoll_thread_fun, (void*)this);
     zlog.log("epoll startup");
     m_status = ZMT_RUNNING;
 
@@ -95,6 +94,7 @@ int ZEpoll::shutdown()
 int ZEpoll::exit()
 {
     zlog.log("epoll exit");
+    shutdown();
     m_status = ZMT_EXIT;
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
@@ -142,7 +142,7 @@ void ZEpoll::set_accept_handler(accept_handler handler) {
 
 int ZEpoll::loop()
 {
-    //zlog.log("zepoll::loop()");
+    zlog.log("zepoll::loop()");
     std::vector<ZConnection*> closelist;
     struct epoll_event events[MAX_EPOLL_EVENT];
     int nfds;

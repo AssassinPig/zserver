@@ -6,7 +6,8 @@ INCLUDE_DIRECTORIES(/usr/local/include/)
 SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_CXX_FLAGS_DEBUG "-O3 -Wall -g")
 
-ADD_EXECUTABLE(main main.cpp
+ADD_EXECUTABLE(simple_server simple_server.cpp
+zsocket_util.hpp
 zthread_module.cpp
 zclient.cpp
 zconfig.cpp
@@ -21,7 +22,7 @@ zthread_util.hpp
 zmutex.hpp
 zconnection.cpp
 )
-TARGET_LINK_LIBRARIES(main 
+TARGET_LINK_LIBRARIES(simple_server
     pthread 
     boost_thread 
     boost_system)
