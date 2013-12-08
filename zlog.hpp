@@ -15,8 +15,5 @@ class ZLog
         static FILE *ms_fp;
 };
 
-//no need any more
-//void log(char * buf, ...);
-
 extern ZLog zlog;
 #endif //_ZSERVER_H__

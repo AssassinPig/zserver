@@ -13,3 +13,17 @@
 #include <netinet/in.h>
 
 
+#include <netinet/in.h>                                                                 
+#include <fcntl.h>                                                                      
+#include <signal.h>                                                                     
+#include <sys/times.h>
+
+#include <sys/ioctl.h>
+#include <stropts.h>
+#include <sys/wait.h>
+
+
+#include <sys/stat.h>
+#include <semaphore.h>
+
+#include <sys/mman.h>

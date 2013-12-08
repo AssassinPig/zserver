@@ -16,10 +16,15 @@ ZServer::ZServer()
     m_active = false;
 }
 
+ZServer::~ZServer()
+{
+
+}
+
 int ZServer::init()
 {   
     set_signal();
-    ZPacket_factory::init();
+    //ZPacket_factory::init();
     m_active = true;
     g_ModuleContainer = new ZModuleContainer;	
 

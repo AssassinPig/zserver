@@ -9,6 +9,7 @@ class ZServer
 {
 public:
 	ZServer();
+        virtual ~ZServer();
 	int init();
 	int startup(const char* bind_ip, int port);
 	int loop();
@@ -27,7 +28,7 @@ public:
 protected:
 	int set_signal();
 
-private:
+protected:
 	static bool m_active;
 	typedef std::map<ZFD_T, ZClient*> SESSION_MAP;
 	typedef std::vector<ZClient*> CLIENT_LIST;

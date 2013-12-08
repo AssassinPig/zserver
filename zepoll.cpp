@@ -53,7 +53,7 @@ int ZEpoll::startup()
     }
 
     //m_listener = socket(AF_INET, SOCK_STREAM, 0);
-    m_listener = TCPSocket();
+    m_listener = ZTCPSocket();
 
     fcntl(m_listener, F_SETFL, fcntl(m_listener, F_GETFL)|O_NONBLOCK);
 
