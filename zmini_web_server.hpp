@@ -31,10 +31,10 @@ class ZMiniWebServer : public ZServer
             
         }; 
 
-	int init();
-	int startup(const char* bind_ip, int port);
-	int loop();
-        int exit();
+        virtual	int init();
+        virtual	int startup(const char* bind_ip, int port);
+        virtual	int loop();
+        virtual int exit();
 
         child_process_info* GetChildInfo();
         ZSocket* GetSocket();

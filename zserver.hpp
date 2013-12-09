@@ -5,15 +5,19 @@
 #include "zepoll.hpp"
 #include "zclient.hpp"
 
+class ZModule;
+
 class ZServer
 {
 public:
 	ZServer();
         virtual ~ZServer();
-	int init();
-	int startup(const char* bind_ip, int port);
-	int loop();
-        int exit();
+
+        virtual int init();
+        virtual int startup(const char* bind_ip, int port);
+        virtual int loop();
+        virtual int exit();
+
 	bool is_active();
 
 	static void shutdown(int sig_num);
@@ -34,5 +38,8 @@ protected:
 	typedef std::vector<ZClient*> CLIENT_LIST;
 	CLIENT_LIST	m_clients;
 	SESSION_MAP     m_sessions;
+
+private:
+        ZModule* m_network;
 };
 #endif //_ZSERVER_H_

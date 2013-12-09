@@ -55,3 +55,32 @@ TARGET_LINK_LIBRARIES(mini_web_server
     pthread 
     boost_thread 
     boost_system)
+
+ADD_EXECUTABLE(proxy_server proxy_server.cpp
+zproxy_server.cpp
+zproxy_client.cpp
+zthread.cpp
+zsocket.cpp
+zsocket_util.cpp
+zthread_module.cpp
+zclient.cpp
+zconfig.cpp
+zepoll.cpp
+zlog.cpp
+zpacket.cpp
+zserver.cpp
+zstream.cpp
+zworld.cpp
+zexample_module.cpp
+zthread_util.hpp
+zprocess_util.cpp
+zmutex.hpp
+zmutex_guard.hpp
+zconnection.cpp
+zthread.hpp
+)
+
+TARGET_LINK_LIBRARIES(proxy_server
+    pthread 
+    boost_thread 
+    boost_system)

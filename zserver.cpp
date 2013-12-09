@@ -4,12 +4,10 @@
 #include "zpacket.hpp"
 #include "zthread_module.hpp"
 
-#include<signal.h>
 #include "zepoll.hpp"
 
 ZLog zlog;
 bool ZServer::m_active = false;
-ZModule* g_network = NULL;
 
 ZServer::ZServer()
 {
@@ -52,13 +50,13 @@ int ZServer::startup(const char* bind_ip, int port)
 
     g_ModuleContainer->startup();
 
-    g_network = new ZEpoll;
-    ZEpoll* epoll = (ZEpoll*)g_network;
+    m_network = new ZEpoll;
+    ZEpoll* epoll = (ZEpoll*)m_network;
     
     ZEpoll::accept_handler handler = boost::bind(&ZServer::accept_client, this, _1);
     epoll->set_accept_handler(handler);
     epoll->set_sockaddr(bind_ip, port);
-    g_network->startup();
+    m_network->startup();
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
@@ -70,6 +68,7 @@ bool ZServer::is_active()
 
 int ZServer::exit()
 {
+    m_network->exit();
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
@@ -78,9 +77,11 @@ int ZServer::loop()
     while(is_active()){
         zlog.log("server loop");
         g_ModuleContainer->loop();
-        ZEpoll* epoll = (ZEpoll*)g_network;
+        ZEpoll* epoll = (ZEpoll*)m_network;
         epoll->loop();
     }
+
+    exit();
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
@@ -88,7 +89,6 @@ int ZServer::loop()
 void ZServer::shutdown(int sig_num)
 {
     m_active = false;
-    g_network->exit();
     g_ModuleContainer->exit();
     zlog.log("server shutdown[sig:%d]", sig_num);
 }

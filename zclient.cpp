@@ -10,10 +10,6 @@
 
 ZClient::ZClient(ZServer* server) : m_server(server)
 {
-//	boost::function<int (char data[],  uint32_t len)> handler1 = boost::bind(&ZClient::on_message, this, _1, _2);
-//	boost::function<int ()> handler2 = boost::bind(&ZClient::on_error, this);
-//	boost::function<int ()> handler3 = boost::bind(&ZClient::on_close, this);
-
 	ZConnection::message_handler handler1 = boost::bind(&ZClient::on_message, this, _1, _2);
 	ZConnection::error_handler handler2 = boost::bind(&ZClient::on_error, this);
 	ZConnection::close_handler handler3 = boost::bind(&ZClient::on_close, this);

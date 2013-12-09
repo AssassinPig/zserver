@@ -10,18 +10,18 @@ class ZClient
 {
 public:
 	ZClient(ZServer* server);	
-	~ZClient();
+	virtual ~ZClient();
 
-	int on_message(char data[], uint32_t len);
-	int on_error();
-	void on_close();
+	virtual int on_message(char data[], uint32_t len);
+	virtual int on_error();
+	virtual void on_close();
 	
 	void send_to_client(zpacket_t* packet);	
 	void send_error();
 	inline ZConnection* get_connection() { return &m_connection; }
-	inline void set_connection(ZFD_T fd) {	m_connection.set_fd(fd); }
+	inline void set_connection(ZFD_T fd) { m_connection.set_fd(fd); }
 
-private:
+protected:
 	ZConnection m_connection;
 	ZServer* m_server;
 };
