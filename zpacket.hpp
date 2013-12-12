@@ -35,6 +35,7 @@ class ZPacket_factory
 public:
 	//ZPacket_factory();
 	static void init();
+        static void clear();
 	//typedef (T::*create_packet)(zpacket_t& head, char data[]); 
 	static ZPacket* create_packet(zpacket_t& head, char data[]);
 	static std::map<uint32_t, create_fn> ms_create_funs;

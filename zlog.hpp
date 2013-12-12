@@ -3,17 +3,19 @@
 #include "com_inc.hpp"
 #include <stdarg.h>
 
-#define zlog(text) zlog::log(text)
+#define ZLOG_INIT(filename) ZLog* zlog=new ZLog(#filename);
+#define ZDEBUG_LOG zlog->log
 
-class ZLog
+class ZLog 
 {
     public:
-        ZLog(); 
+        ZLog(const char* logfilename = NULL); 
         ~ZLog(); 
-        static void log(const char* buf, ...);
+
+        void log(const char* buf, ...);
     protected:
-        static FILE *ms_fp;
+        FILE *m_fp;
 };
 
-extern ZLog zlog;
+extern ZLog* zlog;
 #endif //_ZSERVER_H__

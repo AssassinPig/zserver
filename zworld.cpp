@@ -11,16 +11,16 @@ void ZWorld::dispatch(char data[], uint32_t len, ZFD_T fd)
 //	SESSION_MAP::iterator it = m_sessions.find(fd);
 //	if (it == m_sessions.end()) {
 //		//m_sessions[fd] = 0;
-//		zlog.log("fd does not exist");
+//		ZDEBUG_LOG("fd does not exist");
 //		return;
 //	}
 //	
 //	//rebuild head	
-//	zlog.log("receive data len[%u]", len);
+//	ZDEBUG_LOG("receive data len[%u]", len);
 //	zpacket_t head = ZPacket::build_head(data);
 /*
 	if (head.len > len) {
-		zlog.log("uid[%u] invalid packet len[%u], head.len[%u]", head.uid, len, head.len);
+		ZDEBUG_LOG("uid[%u] invalid packet len[%u], head.len[%u]", head.uid, len, head.len);
 		return;
 	}
 */	
@@ -31,7 +31,7 @@ void ZWorld::dispatch(char data[], uint32_t len, ZFD_T fd)
 //		if (head.cmd == cmd_login) {
 //			add_client(head.uid, fd);
 //		} else {
-//			zlog.log("player[%u] have not login", head.uid);			
+//			ZDEBUG_LOG("player[%u] have not login", head.uid);			
 //			return;
 //		}
 //	} 
@@ -78,7 +78,7 @@ void ZWorld::add_session(ZFD_T fd)
 	if (it == m_sessions.end()) {
 		m_sessions[fd] = 0;
 	} else {
-		zlog.log("player[%u] reconnect!!!", m_sessions[fd]);	
+		ZDEBUG_LOG("player[%u] reconnect!!!", m_sessions[fd]);	
 		kick_player(m_sessions[fd]);
 	}	
 }
@@ -87,7 +87,7 @@ void ZWorld::add_client(USER_ID uid, ZFD_T fd)
 {
 	SESSION_MAP::iterator it = m_sessions.find(fd);
 	if (it == m_sessions.end()) {
-		zlog.log("player[%u] fd does not exist", uid);
+		ZDEBUG_LOG("player[%u] fd does not exist", uid);
 		return;
 	}
 	
@@ -101,20 +101,20 @@ void ZWorld::kick_player(USER_ID uid)
 {
 //	ZClient* client = find_client(uid);
 //	if (client) {
-//		zlog.log("kick player[%u]", uid);
+//		ZDEBUG_LOG("kick player[%u]", uid);
 //		client->close_session();
 //		remove_player(uid);	
 //		return;
 //	}
 	
-	zlog.log("kick player[%u] faild, he does not exist", uid);
+	ZDEBUG_LOG("kick player[%u] faild, he does not exist", uid);
 }
 
 void ZWorld::remove_player(USER_ID uid)
 {
 	CLIENT_MAP::iterator it = m_clients.find(uid);	
 	if (it == m_clients.end()) {
-		zlog.log("remove player[%u] failed", uid);
+		ZDEBUG_LOG("remove player[%u] failed", uid);
 	} else {
 		m_clients.erase(it);
 	}

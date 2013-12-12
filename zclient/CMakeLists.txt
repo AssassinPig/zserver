@@ -1,8 +1,14 @@
-PROJECT(main)
+PROJECT(zclient)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-AUX_SOURCE_DIRECTORY(. DIR_SRCS)
+
+#AUX_SOURCE_DIRECTORY(. DIR_SRCS)
+
+INCLUDE_DIRECTORIES(../)
 INCLUDE_DIRECTORIES(/usr/local/include/)
-ADD_EXECUTABLE(main main.cpp)
-#ADD_EXECUTABLE(spider spider.cpp)
+
+ADD_EXECUTABLE(main main.cpp
+    zclient.cpp
+    ../zsocket.cpp)
+
 #TARGET_LINK_LIBRARIES(main pthread)
 #TARGET_LINK_LIBRARIES(main boost_thread)

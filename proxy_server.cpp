@@ -1,6 +1,8 @@
 #include "zconfig.hpp"
 #include "zproxy_server.hpp"
+#include "zlog.hpp"
 
+ZLOG_INIT(proxy_server.log); 
 int main()
 {
     g_config = new zconfig;

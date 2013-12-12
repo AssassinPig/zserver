@@ -26,7 +26,9 @@ zconnection.cpp
 TARGET_LINK_LIBRARIES(simple_server
     pthread 
     boost_thread 
-    boost_system)
+    boost_system
+    protobuf
+    )
 
 ADD_EXECUTABLE(mini_web_server mini_web_server.cpp
 zmini_web_server.cpp
@@ -54,7 +56,9 @@ zthread.hpp
 TARGET_LINK_LIBRARIES(mini_web_server
     pthread 
     boost_thread 
-    boost_system)
+    boost_system
+    protobuf
+    )
 
 ADD_EXECUTABLE(proxy_server proxy_server.cpp
 zproxy_server.cpp
@@ -83,4 +87,37 @@ zthread.hpp
 TARGET_LINK_LIBRARIES(proxy_server
     pthread 
     boost_thread 
-    boost_system)
+    boost_system
+    protobuf
+    )
+
+ADD_EXECUTABLE(work_server work_server.cpp
+zwork_server.cpp
+zwork_client.cpp
+zthread.cpp
+zsocket.cpp
+zsocket_util.cpp
+zthread_module.cpp
+zclient.cpp
+zconfig.cpp
+zepoll.cpp
+zlog.cpp
+zpacket.cpp
+zserver.cpp
+zstream.cpp
+zworld.cpp
+zexample_module.cpp
+zthread_util.hpp
+zprocess_util.cpp
+zmutex.hpp
+zmutex_guard.hpp
+zconnection.cpp
+zthread.hpp
+)
+
+TARGET_LINK_LIBRARIES(work_server
+    pthread 
+    boost_thread 
+    boost_system
+    protobuf
+    )

@@ -18,6 +18,7 @@ class ZSocket
         int Bind(const char* bind_ip, int port);
         int Listen(int fd, int backlog=512);
         int Connect(int fd, const sockaddr* sockaddr, socklen_t len);
+        int Connect(const char* bind_ip, int port);
         int Accept(struct sockaddr* sockaddr, socklen_t* len);
         int Setsockopt(int fd, int level, int optname, void* optvalue, socklen_t optlen);
 

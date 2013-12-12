@@ -2,30 +2,30 @@
 #include <time.h>
 #include <assert.h>
 
-FILE* ZLog::ms_fp = NULL;
-
-ZLog::ZLog()
+ZLog::ZLog(const char* logfilename)
 {
-    ms_fp = NULL;
+    m_fp = NULL;
 
-    ms_fp = fopen("log.txt", "a");
-    assert(ms_fp);
+    if(!logfilename)
+        m_fp = fopen("log.txt", "a");
+    else 
+        m_fp = fopen(logfilename, "a");
+    assert(m_fp);
 }
 
 ZLog::~ZLog()
 {
-    if (ms_fp) {
-        fclose(ms_fp);
+    if (m_fp) {
+        fclose(m_fp);
     }
 }
 
 void ZLog::log(const char* buf, ...)
 {
-    assert(ms_fp);
+    assert(m_fp);
 
     char tmp_buf[1024], tmp_buf2[1024];
     va_list args;
-    //ms_fp;
 
     time_t tval;
     time(&tval);
@@ -45,7 +45,7 @@ void ZLog::log(const char* buf, ...)
             tmp_buf
            );
 
-    fprintf(ms_fp, "%s", tmp_buf2);
-    fflush(ms_fp);
+    fprintf(m_fp, "%s", tmp_buf2);
+    fflush(m_fp);
 }
 

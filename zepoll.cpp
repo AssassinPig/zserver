@@ -18,7 +18,7 @@ int epoll_thread_fun(void* data)
     }
 
     //clean 
-    zlog.log("epoll thread exit then close epoll");
+    ZDEBUG_LOG("epoll thread exit then close epoll");
     epoll->shutdown(); 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
@@ -78,7 +78,7 @@ int ZEpoll::startup()
         return -1;
     }
 
-    zlog.log("epoll startup");
+    ZDEBUG_LOG("epoll startup");
     m_status = ZMT_RUNNING;
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
@@ -86,17 +86,32 @@ int ZEpoll::startup()
 
 int ZEpoll::shutdown()
 {
-    zlog.log("epoll shutdown");
+    ZDEBUG_LOG("epoll shutdown");
     close(m_epoll);
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 int ZEpoll::exit()
 {
-    zlog.log("epoll exit");
+    ZDEBUG_LOG("epoll exit");
     shutdown();
     m_status = ZMT_EXIT;
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
+}
+
+void ZEpoll::add_fd(int new_fd)
+{
+    //add session
+    void* ptr_connection = m_accept_handler(new_fd);
+
+    fcntl(new_fd, F_SETFL, fcntl(new_fd, F_GETFL)|O_NONBLOCK);
+    epoll_event ev;
+    ev.events = EPOLLOUT |EPOLLET;
+    ev.data.ptr = ptr_connection; 
+
+    if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, new_fd, &ev) == -1) {
+        perror("epoll_ctl");
+    }
 }
 
 void ZEpoll::set_read(epoll_event& ev, bool flag)
@@ -142,7 +157,7 @@ void ZEpoll::set_accept_handler(accept_handler handler) {
 
 int ZEpoll::loop()
 {
-    zlog.log("zepoll::loop()");
+    ZDEBUG_LOG("zepoll::loop()");
     std::vector<ZConnection*> closelist;
     struct epoll_event events[MAX_EPOLL_EVENT];
     int nfds;
@@ -158,9 +173,10 @@ int ZEpoll::loop()
 
             int client_fd;
             while( (client_fd = accept(m_listener, (struct sockaddr *)&in, &len)) > 0) {
-                zlog.log("accpet client %s:%d", inet_ntoa(in.sin_addr), ntohs(in.sin_port));
+                ZDEBUG_LOG("accpet client %s:%d", inet_ntoa(in.sin_addr), ntohs(in.sin_port));
                 if (client_fd < 0){
                     perror("accept");
+                    //close(client_fd);
                     break;;
                 }
 
@@ -192,7 +208,7 @@ int ZEpoll::loop()
                 else if(n>0){
                     set_write(events[i], true);
                 } else {
-                    zlog.log("epoll read failed");
+                    ZDEBUG_LOG("epoll read failed");
                 }
 
                 continue;
@@ -204,17 +220,17 @@ int ZEpoll::loop()
                     closelist.push_back(connection);
                 }
                 else if(n > 0) {
-                    zlog.log("epoll write [fd:%d] len=%d", connection->get_fd(), n);
+                    ZDEBUG_LOG("epoll write [fd:%d] len=%d", connection->get_fd(), n);
                     set_read(events[i], true);
                 } else {
-                    zlog.log("epoll write failed");
+                    ZDEBUG_LOG("epoll write failed");
                 }
 
                 continue;
             }
 
             if (events[i].events & (EPOLLERR|EPOLLHUP|EPOLLPRI)) {
-                zlog.log("EPOLLERR|EPOLLHUP|EPOLLPRI: client linkdown");
+                ZDEBUG_LOG("EPOLLERR|EPOLLHUP|EPOLLPRI: client linkdown");
                 close(connection->get_fd());
                 continue;
             }

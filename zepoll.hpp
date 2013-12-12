@@ -23,6 +23,7 @@ class ZEpoll : public ZModule
         virtual int shutdown();
         virtual int exit();
 
+        void add_fd(int new_fd);
         void set_read(epoll_event& event, bool flag);
         void set_write(epoll_event& event, bool flag);
         void del(int fd);

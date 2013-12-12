@@ -30,7 +30,7 @@ void ZConnection::set_close_handler(close_handler handler)
 
 void ZConnection::on_message(char data[], uint32_t len)
 {
-    zlog.log("zconnection on message len=%u", len);
+    ZDEBUG_LOG("zconnection on message len=%u", len);
     m_message_handler(data, len);		
 }
 
@@ -52,9 +52,17 @@ int ZConnection::on_network_read()
 
     char buf[MAX_SEND];
     memset(buf, 0, MAX_SEND);
+
     while ( (nread = read(m_fd, buf, MAX_SEND)) > 0) {
         n += nread;
-        //zlog.log("on_network_read1 %s", buf);
+        if(n<(int)m_input.capacity()) {
+            m_input.input(buf, nread); 
+        } else {
+            perror("input stream full, the rest will be thrown"); 
+        }
+        
+        memset(buf, 0, MAX_SEND);
+        //ZDEBUG_LOG("on_network_read1 %s", buf);
     }
 
     if (nread == -1 && errno != EAGAIN) {
@@ -62,37 +70,41 @@ int ZConnection::on_network_read()
         return -1;
     }
 
-    zlog.log("on_network_read %s", buf);
-    //on_message(m_input.get_data(), m_input.length());
+    ZDEBUG_LOG("on_network_read %s", buf);
+    on_message(m_input.get_data(), m_input.length());
     //on_message(buf, n);
     return n;	
 }
 
 int ZConnection::on_network_write()
 {
-    //int n = m_output.length();
     int nwrite = 0;
     char buf[MAX_SEND];
-    sprintf(buf, "abcdef");
-    int n = strlen(buf)+1;
+    int n = m_output.length();
     int ret = 0;
 
     while (n > 0) { 
-        if( (nwrite = write(m_fd, buf, strlen(buf)+1)) <=0) {
+        int thiswrite = m_output.output(buf, sizeof(int));
+        ZDEBUG_LOG("on_network_write1 thiswirte:%d", thiswrite);
+        if( (nwrite = write(m_fd, buf, thiswrite)) <=0) {
             perror("write failed on network write");
             break;
         }
 
         n -= nwrite;
         ret += nwrite;
-        //zlog.log("on_network_write1 %s", buf);
+        memset(buf, 0, MAX_SEND);
+        ZDEBUG_LOG("on_network_write1 thiswirte:%d, nwrite:%d, n:%d", thiswrite, nwrite, n);
     }
 
-    zlog.log("on_network_write %s", buf);
     if (nwrite == -1 && errno != EAGAIN) {
-        zlog.log("write error");
+        ZDEBUG_LOG("write error");
         perror("write error");
         return -1;
+    }
+    
+    if(ret >= (int)m_output.length()) {
+        m_output.cleanup(); 
     }
 
     return ret;	

@@ -55,6 +55,17 @@ int ZSocket::Connect(int fd, const sockaddr* sockaddr, socklen_t len)
     return ZConnect(fd, sockaddr, len);
 }
 
+int ZSocket::Connect(const char* bind_ip, int port)
+{
+    //bind ip and port
+    sockaddr_in addr;               //only ipv4 
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr(bind_ip);
+    addr.sin_port = htons(port);
+
+    return Connect(m_sockfd, (const sockaddr*)&addr, sizeof(addr));
+}
+
 int ZSocket::Accept(struct sockaddr* sockaddr, socklen_t* len)
 {
     return ZAccept(m_sockfd, sockaddr, len);

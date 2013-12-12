@@ -5,8 +5,13 @@
 3， proxy logic proxy将逻辑hash散射到logic 准备把proxy当成一个有负载的调度server， 而logic作为纯worker server(跟2的区别是logic可以放在其他物理机上) 
 4， gateway center worker gateway实现负载 center管理所有worker worker是业务的服务器
 
-其他测试程序稍后继续, 目前之后对simple的测试， 72m无线网卡+100m无线路由器，开虚拟机可以达到20~30%的网络流量，物理机上应该可更高一些
+其他测试程序稍后继续, 目前只有对simple的测试， 72m无线网卡+100m无线路由器，开虚拟机可以达到20~30%的网络流量，物理机上应该可更高一些
 
+
+依赖的库
+pthread
+boost
+protobuf
 
 author: assassinpig
 email: assassinpig@gmail.com

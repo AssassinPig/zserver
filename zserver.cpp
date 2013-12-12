@@ -6,7 +6,6 @@
 
 #include "zepoll.hpp"
 
-ZLog zlog;
 bool ZServer::m_active = false;
 
 ZServer::ZServer()
@@ -46,7 +45,7 @@ int ZServer::set_signal()
 
 int ZServer::startup(const char* bind_ip, int port)
 {
-    zlog.log("server startup ip:%s port:%d", bind_ip, port);
+    ZDEBUG_LOG("server startup ip:%s port:%d", bind_ip, port);
 
     g_ModuleContainer->startup();
 
@@ -75,7 +74,7 @@ int ZServer::exit()
 int ZServer::loop()
 {                  
     while(is_active()){
-        zlog.log("server loop");
+        ZDEBUG_LOG("server loop");
         g_ModuleContainer->loop();
         ZEpoll* epoll = (ZEpoll*)m_network;
         epoll->loop();
@@ -90,12 +89,12 @@ void ZServer::shutdown(int sig_num)
 {
     m_active = false;
     g_ModuleContainer->exit();
-    zlog.log("server shutdown[sig:%d]", sig_num);
+    ZDEBUG_LOG("server shutdown[sig:%d]", sig_num);
 }
 
 ZConnection* ZServer::accept_client(int fd)
 {
-    zlog.log("server accept [fd:%d]", fd);
+    ZDEBUG_LOG("server accept new client[fd:%d]", fd);
     ZClient* client = new ZClient(this);
     client->set_connection(fd);
     m_clients.push_back(client);

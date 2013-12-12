@@ -46,7 +46,7 @@ int ZModuleContainer::loop()
         if(m_pModuleList) {
             ZModule* module = m_pModuleList[i];
             if(module != NULL && module->status() != ZMT_EXIT) {
-                zlog.log("zmoulecontainer::loop");
+                ZDEBUG_LOG("zmoulecontainer::loop");
                 //scope mutex
                 module->loop();	
             }

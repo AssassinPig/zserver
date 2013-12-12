@@ -20,7 +20,7 @@ int ZProxyServer::init()
 
 int ZProxyServer::startup(const char* bind_ip, int port)
 {
-    zlog.log("server startup ip:%s port:%d", bind_ip, port);
+    ZDEBUG_LOG("server startup ip:%s port:%d", bind_ip, port);
 
     g_ModuleContainer->startup();
 
@@ -38,7 +38,7 @@ int ZProxyServer::startup(const char* bind_ip, int port)
 int ZProxyServer::loop()
 {
     while(is_active()){
-        zlog.log("server loop");
+        ZDEBUG_LOG("server loop");
         g_ModuleContainer->loop();
         ZEpoll* epoll = (ZEpoll*)m_network;
         epoll->loop();
@@ -56,9 +56,8 @@ int ZProxyServer::exit()
 
 ZConnection* ZProxyServer::accept_client(int fd)
 {
-    zlog.log("server accept [fd:%d]", fd);
+    ZDEBUG_LOG("server accept [fd:%d]", fd);
 
-    //ZClient* client = new ZClient(this);
     ZClient* client = new ZProxyClient(this); 
     client->set_connection(fd);
     m_clients.push_back(client);

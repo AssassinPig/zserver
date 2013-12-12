@@ -1,5 +1,8 @@
 #include "zconfig.hpp"
 #include "zserver.hpp"
+#include "zlog.hpp"
+
+ZLOG_INIT(simple_server.log)
 
 int main()
 {

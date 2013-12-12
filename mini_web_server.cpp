@@ -1,6 +1,8 @@
 #include "zconfig.hpp"
+#include "zlog.hpp"
 #include "zmini_web_server.hpp"
 
+ZLOG_INIT(mini_web_server.log); 
 int main()
 {
     g_config = new zconfig;

@@ -12,7 +12,7 @@ int example_thread(void* data)
             break;	
         }
 
-        zlog.log("example_thread while");
+        ZDEBUG_LOG("example_thread while");
         //unsafe tobe continued
         //loop client
         //build packet and process
@@ -20,7 +20,7 @@ int example_thread(void* data)
     }
 
     //clean 
-    zlog.log("epoll thread exit then close epoll");
+    ZDEBUG_LOG("epoll thread exit then close epoll");
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 

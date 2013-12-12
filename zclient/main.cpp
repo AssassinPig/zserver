@@ -1,3 +1,5 @@
+#include "std_inc.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +17,6 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "std_inc.hpp"
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -34,19 +35,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-
-#define MAX_LINE 16834
-
-//zserver
 //#define BIND_IP "127.0.0.1"
 #define BIND_IP "192.168.0.105"
 #define LISTEN_PORT 12348
 //#define LISTEN_PORT 80 
 
 #define MAX_BUF 1024
-
-//#include "../zpacket.hpp"
-//#include "../cmd_def.hpp"
 
 int main(int argc, char* argv[])
 {
