@@ -112,7 +112,7 @@ int ZStream::input(char* data, uint32_t len)
 int ZStream::output(char* out, uint32_t len)
 {
     assert(out != NULL && len);
-    if (m_head >= m_tail) {
+    if (m_head > m_tail) {
         //out enough
         if (m_head - m_tail < len) {
             uint32_t size = m_head-m_tail;
@@ -146,18 +146,26 @@ int ZStream::output(char* out, uint32_t len)
         memcpy(out+part_len1, m_data, part_len2);
         m_tail = m_head;
         return part_len1 + part_len2;
+    } else {
+       // if(len<m_capacity) {
+       //     memcpy(out, m_data+m_tail, len);
+       //     return len; 
+       // } else {
+       //     memcpy(out, m_data+m_tail, m_capacity);
+       //     return m_capacity; 
+       // }
+       return 0;
     }
-   // else {
-   //     return 0; 	
-   // }
 }
 
 uint32_t ZStream::length()
 {
     if (m_head > m_tail) {
         return m_head - m_tail;
-    } else {
+    } else if(m_head < m_tail) {
         return m_capacity - m_tail + m_head;
+    } else {
+        return 0; 
     }
 }
 

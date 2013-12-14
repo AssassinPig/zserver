@@ -5,6 +5,7 @@
 #include "zlog.hpp"
 #include "zmutex.hpp"
 #include "zsocket_util.hpp"
+#include "zconnection.hpp"
 
 int epoll_thread_fun(void* data)
 {
@@ -99,7 +100,7 @@ int ZEpoll::exit()
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
-void ZEpoll::add_fd(int new_fd)
+void* ZEpoll::add_fd(int new_fd)
 {
     //add session
     void* ptr_connection = m_accept_handler(new_fd);
@@ -112,6 +113,8 @@ void ZEpoll::add_fd(int new_fd)
     if (epoll_ctl(m_epoll, EPOLL_CTL_ADD, new_fd, &ev) == -1) {
         perror("epoll_ctl");
     }
+
+    return ptr_connection;
 }
 
 void ZEpoll::set_read(epoll_event& ev, bool flag)
@@ -196,16 +199,16 @@ int ZEpoll::loop()
             continue;
         } else {
             ZConnection* connection = (ZConnection*)events[i].data.ptr;
-            if(!connection || connection->status() == ZCS_CLOSE) {
+            if(!connection || connection->status() == ZConnection::ZCS_CLOSE) {
                 continue;		
             }
 
             if (events[i].events & EPOLLIN) {
                 int n = connection->on_network_read();
                 if(n==0){
+                    if(connection->status() == ZConnection::ZCS_CLOSE)  
                     closelist.push_back(connection);
-                } 
-                else if(n>0){
+                } else if(n>0){
                     set_write(events[i], true);
                 } else {
                     ZDEBUG_LOG("epoll read failed");
@@ -217,9 +220,9 @@ int ZEpoll::loop()
             if (events[i].events & EPOLLOUT) {
                 int n = connection->on_network_write();
                 if(n==0){
-                    closelist.push_back(connection);
-                }
-                else if(n > 0) {
+                    if(connection->status() == ZConnection::ZCS_CLOSE)  
+                        closelist.push_back(connection);
+                } else if(n > 0) {
                     ZDEBUG_LOG("epoll write [fd:%d] len=%d", connection->get_fd(), n);
                     set_read(events[i], true);
                 } else {

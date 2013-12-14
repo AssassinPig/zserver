@@ -15,3 +15,6 @@ protobuf
 
 author: assassinpig
 email: assassinpig@gmail.com
+
+目前版本的问题:
+在zserver::loop中轮询各个client，导致cpu占满, 准备先这样，以后想点更好的办法

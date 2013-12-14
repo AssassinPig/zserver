@@ -6,50 +6,51 @@
 #include "zpacket.hpp"
 #include <boost/function.hpp>
 
-enum ZCONNECTION_STATUS {
-	ZCS_CONNECTED,
-	ZCS_CLOSE,
-	ZCS_UNKOWN,
-};
-
 class ZConnection
 {
 public:
-	typedef	boost::function<int (char data[],  uint32_t len)> message_handler;
-	typedef	boost::function<int ()> error_handler;
-	typedef	boost::function<void ()> close_handler;
-		
-	ZConnection();
-	~ZConnection();
+    enum ZCONNECTION_STATUS {
+        ZCS_CONNECTED,
+        ZCS_CLOSE,
+        ZCS_UNKOWN,
+    };
 
-	inline ZFD_T get_fd() { return m_fd; }
-	inline void set_fd(ZFD_T fd) { m_fd = fd;}
-	
-	void set_message_handler(message_handler handler);
-	void set_error_handler(error_handler handler);
-	void set_close_handler(close_handler handler);
+    typedef	boost::function<int (char data[],  uint32_t len)> message_handler;
+    typedef	boost::function<int ()> error_handler;
+    typedef	boost::function<void ()> close_handler;
 
-	void on_message(char data[], uint32_t len);
-	void on_error();
-	void on_close();
+    ZConnection();
+    ~ZConnection();
 
-	int on_network_read();
-	int on_network_write();
+    inline ZFD_T get_fd() { return m_fd; }
+    inline void set_fd(ZFD_T fd) { m_fd = fd;}
 
-	ZCONNECTION_STATUS status() { return m_status; } 
+    void set_message_handler(message_handler handler);
+    void set_error_handler(error_handler handler);
+    void set_close_handler(close_handler handler);
 
-	ZStream& get_instream() { return m_input; }
-	ZStream& get_outstream() { return m_output; }
+    void on_message(char data[], uint32_t len);
+    void on_error();
+    void on_close();
+
+    //be invoked by network epoll
+    int on_network_read();
+    int on_network_write();
+
+    ZCONNECTION_STATUS status() { return m_status; } 
+
+    ZStream& get_instream() { return m_input; }
+    ZStream& get_outstream() { return m_output; }
 private:
-	ZFD_T m_fd;
-	ZStream m_input;
-	ZStream m_output;
+    ZFD_T m_fd;
+    ZStream m_input;
+    ZStream m_output;
 
-	message_handler m_message_handler;
-	error_handler m_error_handler;
-	close_handler m_close_handler;
+    message_handler m_message_handler;
+    error_handler m_error_handler;
+    close_handler m_close_handler;
 
-	ZCONNECTION_STATUS m_status;
+    ZCONNECTION_STATUS m_status;
 };
 
 #endif

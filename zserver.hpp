@@ -39,7 +39,6 @@ protected:
 	CLIENT_LIST	m_clients;
 	SESSION_MAP     m_sessions;
 
-private:
         ZModule* m_network;
 };
 #endif //_ZSERVER_H_

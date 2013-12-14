@@ -11,6 +11,7 @@ class ZProxyClient : public ZClient
 	virtual int on_error();
 	virtual void on_close();
 
+        virtual void process_message();
     private:
 
 };

@@ -4,7 +4,7 @@ AUX_SOURCE_DIRECTORY(. DIR_SRCS)
 INCLUDE_DIRECTORIES(/usr/local/include/)
 
 SET(CMAKE_BUILD_TYPE Debug)
-SET(CMAKE_CXX_FLAGS_DEBUG "-O3 -Wall -g")
+SET(CMAKE_CXX_FLAGS_DEBUG "-O3 -Wall -g -fpermissive")
 
 ADD_EXECUTABLE(simple_server simple_server.cpp
 zsocket_util.cpp

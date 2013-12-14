@@ -62,7 +62,7 @@ int ZConnection::on_network_read()
         }
         
         memset(buf, 0, MAX_SEND);
-        //ZDEBUG_LOG("on_network_read1 %s", buf);
+        ZDEBUG_LOG("on_network_read1 thisread:%d", nread);
     }
 
     if (nread == -1 && errno != EAGAIN) {
@@ -70,9 +70,8 @@ int ZConnection::on_network_read()
         return -1;
     }
 
-    ZDEBUG_LOG("on_network_read %s", buf);
-    on_message(m_input.get_data(), m_input.length());
-    //on_message(buf, n);
+    ZDEBUG_LOG("on_network_read sum:%d", n);
+    //on_message(m_input.get_data(), m_input.length());
     return n;	
 }
 
@@ -85,7 +84,7 @@ int ZConnection::on_network_write()
 
     while (n > 0) { 
         int thiswrite = m_output.output(buf, sizeof(int));
-        ZDEBUG_LOG("on_network_write1 thiswirte:%d", thiswrite);
+        ZDEBUG_LOG("on_network_write0 n:%d, thiswirte:%d", n, thiswrite);
         if( (nwrite = write(m_fd, buf, thiswrite)) <=0) {
             perror("write failed on network write");
             break;

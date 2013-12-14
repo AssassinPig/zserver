@@ -16,6 +16,8 @@ public:
 	virtual int on_error();
 	virtual void on_close();
 	
+        virtual void process_message();
+
 	void send_to_client(zpacket_t* packet);	
 	void send_error();
 	inline ZConnection* get_connection() { return &m_connection; }

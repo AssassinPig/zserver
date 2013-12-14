@@ -14,12 +14,12 @@ int ZWorkClient::on_message(char data[], uint32_t len)
 
     ZDEBUG_LOG("zworkclient on_message input %d", data);
 
-    char buf[32];
-    static int times = 0;
-    sprintf(buf, "%d", times++);
-    outstream.input(buf, sizeof(int));
+   // char buf[32];
+   // static int times = 0;
+   // sprintf(buf, "%d", times++);
+   // outstream.input(buf, sizeof(int));
 
-    instream.cleanup(); 
+   // instream.cleanup(); 
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0);
 }

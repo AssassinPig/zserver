@@ -11,4 +11,8 @@ int ZFcntl(int fd, int cmd, ...);
 int ZClose(int fd);
 int ZAccept(int sockfd, struct sockaddr* sockaddr, socklen_t* len);
 int ZConnect(int sockfd, const struct sockaddr* addr, socklen_t addrlen);
+
+int ZRead(int sockfd, const void* buf, size_t len);
+int ZWrite(int sockfd, const void* buf, size_t len);
+
 #endif

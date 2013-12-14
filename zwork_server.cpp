@@ -18,6 +18,8 @@ int ZWorkServer::init()
 
 int ZWorkServer::startup(const char* bind_ip, int port)
 {
+    g_ModuleContainer = new ZModuleContainer;
+    g_ModuleContainer->init();
     g_ModuleContainer->startup();
 
     m_network = new ZEpoll;
@@ -31,22 +33,20 @@ int ZWorkServer::startup(const char* bind_ip, int port)
     m_socket = new ZSocket;
     m_socket->AttachFD(ZTCPSocket());
     m_socket->Connect(bind_ip, 99998);
-    epoll->add_fd(m_socket->GetFD());
+    //ZConnection* connection = (ZConnection*)epoll->add_fd(m_socket->GetFD());
+    //ZStream& outstream = connection->get_outstream();
+    //int times = 0;
+    //outstream.input((char*)&times, sizeof(int));
+    
+    m_thread = new NotifyStatusThread;
+    m_thread->Startup(this);  
 
     FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
 }
 
 int ZWorkServer::loop()
 {
-    while(is_active()){
-        ZDEBUG_LOG("server loop");
-        g_ModuleContainer->loop();
-        ZEpoll* epoll = (ZEpoll*)m_network;
-        epoll->loop();
-    }
-
-    exit();
-    FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
+    return ZServer::loop();
 }
 
 int ZWorkServer::exit()
@@ -65,4 +65,29 @@ ZConnection* ZWorkServer::accept_client(int fd)
     m_clients.push_back(client);
     m_sessions[fd] = client;	
     return  client->get_connection();
+}
+
+int ZWorkServer::NotifyStatusThread::ThreadFun(void* param)
+{
+    ZWorkServer* server = (ZWorkServer*)param; 
+    ZSocket* socket = server->GetSocket();
+    //ZFcntl(socket->GetFD(), F_SETFL, fcntl(socket->GetFD(), F_GETFL)|O_NONBLOCK);
+
+    int i=0;
+    while(Status() == ZThread::zthread_status_idle) {
+        int thissend = ZWrite(socket->GetFD(), (char*)&i, sizeof(int)); 
+        ZDEBUG_LOG("notify status thread send times:%d, thissend:%d", i, thissend);
+
+        int thisrecv = ZRead(socket->GetFD(), (char*)&i, sizeof(int)); 
+        ZDEBUG_LOG("notify status thread recv times:%d, thisread:%d", i, thisrecv);
+        sleep(5);
+    }
+
+    ZClose(socket->GetFD());
+    FUN_NEEDS_RET_WITH_DEFAULT(int, 0)
+}
+
+ZSocket* ZWorkServer::GetSocket()
+{
+    return m_socket;
 }

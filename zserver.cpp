@@ -76,8 +76,13 @@ int ZServer::loop()
     while(is_active()){
         ZDEBUG_LOG("server loop");
         g_ModuleContainer->loop();
+
         ZEpoll* epoll = (ZEpoll*)m_network;
         epoll->loop();
+
+        for(size_t i=0; i<m_clients.size(); ++i) {
+            m_clients[i]->process_message();
+        }
     }
 
     exit();

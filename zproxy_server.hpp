@@ -2,7 +2,10 @@
 #define _ZPROXY_SERVER_H__
 
 #include "zserver.hpp"
+#include "zthread.hpp"
 class ZConnection;
+class ZSocket;
+class ZThread;
 
 class ZProxyServer : public ZServer
 {
@@ -15,8 +18,20 @@ class ZProxyServer : public ZServer
         virtual int exit();
 
 	ZConnection* accept_client(int fd); 
+        
+        class NotifyStatusThread : public ZThread
+        {
+            public:
+                virtual int ThreadFun(void* param);
+            private:
+
+        };
+
+        ZSocket* GetSocket();
+
     private:
-        ZModule* m_network;
+        ZThread* m_thread;
+        ZSocket* m_socket;
 };
 
 #endif//_ZPROXY_SERVER_H__ 

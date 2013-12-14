@@ -41,3 +41,10 @@ void ZClient::on_close()
     ZDEBUG_LOG("client close");
     m_server->close_client(this);
 }
+
+void ZClient::process_message()
+{
+    ZDEBUG_LOG("process message");
+    ZStream& instream = m_connection.get_instream();
+    ZStream& outstream = m_connection.get_outstream();
+}
