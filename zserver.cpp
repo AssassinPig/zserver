@@ -79,10 +79,6 @@ int ZServer::loop()
 
         ZEpoll* epoll = (ZEpoll*)m_network;
         epoll->loop();
-
-        for(size_t i=0; i<m_clients.size(); ++i) {
-            m_clients[i]->process_message();
-        }
     }
 
     exit();
