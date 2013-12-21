@@ -6,10 +6,11 @@
 class ZMutex 
 {
     public:
-        ZMutex():m_holder(0)
-    {
-        pthread_mutex_init(&m_mutex, NULL);
-    }
+        ZMutex()
+            : m_holder(0)
+        {
+            pthread_mutex_init(&m_mutex, NULL);
+        }
 
         ~ZMutex()
         {
@@ -32,9 +33,14 @@ class ZMutex
             pthread_mutex_unlock(&m_mutex);	
         }
 
+        pthread_mutex_t* GetRawMutex() 
+        {
+            return &m_mutex; 
+        }
+
     private:
         pthread_mutex_t m_mutex;
-        pid_t			m_holder;
+        pid_t m_holder;
 };
 
 #endif //_ZMUTEX_H__
