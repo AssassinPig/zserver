@@ -1,0 +1,15 @@
+import "zserver_common.proto";
+package proxy_work;
+
+message NotifyStateResponse{
+   required zserver.CommonMsgHead head = 1; 
+   required ServerStatus status = 2; //proxy status
+
+  enum ServerStatus{
+    SERVER_STATUS_RUNNING = 0;
+    SERVER_STATUS_UNKNOWN = 1;
+    SERVER_STATUS_MAX = 2;
+  }
+}
+
+

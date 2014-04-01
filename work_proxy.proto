@@ -1,0 +1,16 @@
+import "zserver_common.proto";
+package work_proxy;
+
+message NotifyState{
+  required zserver.CommonMsgHead head = 1;
+  required int32  server_id = 2;
+  required string server_addr = 3;
+  required int32  port = 4;
+  required ServerStatus status = 5;
+
+  enum ServerStatus{
+    SERVER_STATUS_RUNNING = 0;
+    SERVER_STATUS_UNKNOWN = 1;
+    SERVER_STATUS_MAX = 2;
+  }
+}

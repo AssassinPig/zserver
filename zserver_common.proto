@@ -1,0 +1,12 @@
+package zserver;
+
+//len is the whole package size
+//nameLen is only the length of messageName
+//the length of message is len - nameLen - checkSum
+message CommonMsgHead{
+   required int32 len = 1;
+   required int32 nameLen = 2;
+   required string messageName = 3;
+   required string Data = 4; 
+   required int32 checkSum = 8;
+}

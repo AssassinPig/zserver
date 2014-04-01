@@ -202,8 +202,10 @@ int main()
 	*/	
 	
 	//foni foni_2nd test
-	int n = 10;
-	printf("foni(%d) = %d, foni_2nd(%d) = %d\n", n, foni(n), n, foni_2nd(n)); 
+	//int n = 10;
+	//printf("foni(%d) = %d, foni_2nd(%d) = %d\n", n, foni(n), n, foni_2nd(n)); 
+
+        
 
 	return 0;
 }
